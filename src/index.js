@@ -34,11 +34,11 @@ document.getElementById("bt").onclick = () => {
     const encoder = new TextEncoder("utf-8");
     const decoder = new TextDecoder("utf-8");
 
-    navigator.bluetooth.requestDevice({
+    const promise = navigator.bluetooth.requestDevice({
         acceptAllDevices: true,
         optionalServices: [serviceUUID] //
     }).then(device => {
-        updateDeviceStatus(device);        
+        updateDeviceStatus(device);  
         return device.gatt.connect();
     })
     .then(server => server.getPrimaryService(serviceUUID))
@@ -47,14 +47,12 @@ document.getElementById("bt").onclick = () => {
             return tx.writeValue(encoder.encode("t"));
         });
         return service.getCharacteristic(txUUID)
-    })
-    .then(characteristic=>{
-        return characteristic.startNotifications();
-    })
-    .then(characteristic => {
-        characteristic.addEventListener('characteristicvaluechanged', blenotification)
-    })
-    .catch(err => console.error(err));
+    }).catch(err => console.error(err))
+
+    setTimeout(() => promise
+        .then(() => characteristic.startNotifications())
+        .then(() => characteristic.addEventListener('characteristicvaluechanged', blenotification))
+    , 1000);
     
     function blenotification(e){
         const val = decoder.decode(e.target.value);
