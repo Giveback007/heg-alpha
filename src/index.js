@@ -47,11 +47,11 @@ document.getElementById("bt").onclick = () => {
             return tx.writeValue(encoder.encode("t"));
         });
         return service.getCharacteristic(txUUID)
-    }).catch(err => console.error(err))
+    }).catch(err => console.error(err));
 
     setTimeout(() => promise
-        .then(() => characteristic.startNotifications())
-        .then(() => characteristic.addEventListener('characteristicvaluechanged', blenotification))
+        .then((characteristic) => characteristic.startNotifications())
+        .then((characteristic) => characteristic.addEventListener('characteristicvaluechanged', blenotification))
     , 1000);
     
     function blenotification(e){
