@@ -11,9 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "parcel-bundler": "^1.12.4"
+    "material-design-icons-iconfont": "^6.1.0"
   },
   "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.27.0",
     "workbox-cli": "^5.1.4"
   }
 }

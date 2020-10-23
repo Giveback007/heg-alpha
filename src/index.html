@@ -7,11 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#000000" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <link href="./index.sass" rel="stylesheet">
     <title>HEG ⍺</title>
 </head>
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <button id="bt"><i class="material-icons">bluetooth</i></button>
+
+    <h3>Device: <span id='device'>--</span></h3>
+    <h3>ID: <span id='device-id'>--</span></h3>
+    <h3>Connected: <span id='device-connected'>--</span></h3>
+
+    <div id="output"></div>
     <script src="./index.js"></script>
     <script>
         // https://developers.google.com/web/tools/workbox/modules/workbox-cli
