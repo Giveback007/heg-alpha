@@ -1,0 +1,18 @@
+{
+  "name": "pwa",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "parcel --experimental-scope-hoisting ./src/index.html",
+    "postbuild": "workbox generateSW"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "parcel-bundler": "^1.12.4"
+  },
+  "devDependencies": {
+    "workbox-cli": "^5.1.4"
+  }
+}
