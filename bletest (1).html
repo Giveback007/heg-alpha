@@ -1,0 +1,54 @@
+<head></head>
+<body>
+    <button id="button">Connect</button>
+    <div id="device"> </div>
+    <div id="output"></div>
+    <script>
+
+        document.getElementById("button").onclick = () => {
+
+        var serviceUUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+        var rxUUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+        var txUUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+        let encoder     = new TextEncoder("utf-8");
+        let decoder     = new TextDecoder("utf-8");
+
+        navigator.bluetooth.requestDevice({   
+            acceptAllDevices: true,
+            optionalServices: [serviceUUID] //
+            })
+            .then(device => {
+                document.getElementById("device").innerHTML += device.name+ "/"+ device.id +"/"+ device.gatt.connected+"<br>";
+            
+                return device.gatt.connect(); //Connect to HEG
+            })
+            .then(sleeper(100)).then(server => server.getPrimaryService(serviceUUID))
+            .then(sleeper(100)).then(service => { 
+                service.getCharacteristic(rxUUID).then(tx => {
+                    return tx.writeValue(encoder.encode("t")); // Send command to start HEG automatically (if not already started)
+                });
+                return service.getCharacteristic(txUUID) // Get stream source
+            })
+            .then(sleeper(100)).then(characteristic=>{
+                return characteristic.startNotifications(); // Subscribe to stream
+            })
+            .then(sleeper(100)).then(characteristic => {
+                characteristic.addEventListener('characteristicvaluechanged',
+                                                blenotification) //Update page with each notification
+            })
+            .catch(err => {console.error(err);});
+            
+            function blenotification(e){
+                var val = decoder.decode(e.target.value);
+        
+                document.getElementById("output").innerHTML = val;
+            }
+
+            function sleeper(ms) {
+                return function(x) {
+                    return new Promise(resolve => setTimeout(() => resolve(x), ms));
+                };
+            }
+        }
+    </script>
+</body>
