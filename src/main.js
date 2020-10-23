@@ -1,1 +1,1 @@
-export const main = () => console.log('hi');
+export const main = () => console.log('IT-WORKS!');

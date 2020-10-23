@@ -15,7 +15,8 @@
     <script src="./index.js"></script>
     <script>
         // https://developers.google.com/web/tools/workbox/modules/workbox-cli
-        const sw = "service-worker.js"; // it is needed because parcel will not recognize this as a file and not precess in its manner
+        // it is needed because parcel will not recognize this as a file and not precess in its manner
+        const sw = "./service-worker.js";
     
         navigator.serviceWorker
           .register(sw)
