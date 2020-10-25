@@ -13,14 +13,25 @@
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <button id="bt"><i class="material-icons">bluetooth</i></button>
 
-    <h3>Device: <span id='device'>--</span></h3>
-    <h3>ID: <span id='device-id'>--</span></h3>
-    <h3>Connected: <span id='device-connected'>--</span></h3>
-    <h4>SPS: <span id='device-sps'>--</span></h4>
+    <div>
+      <button id="bt"><i class="material-icons">bluetooth</i></button>
+      <button id="bt-dc"><i class="material-icons">bluetooth_disabled</i></button>
+      <button id="bt-stats-toggle"><i class="material-icons">perm_data_setting</i></button>
+    </div>
+
+    <div id="bt-stats">
+      <div id="bt-stats-title" class="hide">BT Stats</div>
+      <div>Device: <span id='device'>--</span></div>
+      <div>ID: <span id='device-id'>--</span></div>
+      <div>Connected: <span id='device-connected'>--</span></div>
+      <div>SPS: <span id='device-sps'>--</span></div>
+      <button id="bt-stats-off">X</button>
+    </div>
 
     <div id="output"></div>
+
+    
     <script src="./index.ts"></script>
     <script>
         // https://developers.google.com/web/tools/workbox/modules/workbox-cli

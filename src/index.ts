@@ -34,24 +34,23 @@ function bleNotification([
 }
 
 // -- Bluetooth -- //
+const heg = new hegConnection();
+
 async function connect() {
-    const heg = new hegConnection;
     await heg.connect();
-    heg.startHeg();
+    heg.startReadingHEG();
 
-    let n = 0;
-    heg.subscribe(({ data }) => {
-        const val = data[data.length - 1];
-        const arr = val.replace(/[\n\r]+/g, '').split('|');
-
+    heg.subscribe(({ lastVal }) => {
+        const arr = lastVal.replace(/[\n\r]+/g, '').split('|');
         bleNotification(arr);
-        n++;
     });
-
-    interval(() => {
-        elm('device-sps').innerHTML = n + '';
-        n = 0;
-    }, 1000);
 }
 
 elm("bt").onclick = () => connect();
+elm("bt-dc").onclick = () => heg.disconnect();
+elm("bt-stats-toggle").onclick = () => heg.setState({ showBtStats: !heg.getState().showBtStats });
+
+heg.subscribe(({ showBtStats }) => {
+    elm("bt-stats").className = showBtStats ? "" : "hide";
+})
+
