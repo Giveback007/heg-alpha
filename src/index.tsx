@@ -1,8 +1,12 @@
-import { interval } from '@giveback007/util-lib';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+
+import { App }  from './app';
 import { hegConnection } from './heg-connection';
 import { main } from './main'
-import * as serviceWorker from './service-worker';
 import { elm } from './util/util';
+
+ReactDOM.render(<App/>, document.getElementById('root'));
 
 main(); // import test
 
@@ -12,7 +16,7 @@ if (process.env.NODE_ENV === 'development') {
 
 if (process.env.NODE_ENV === 'production') {
     // import * as serviceWorker from './service-worker';
-    //const serviceWorker = require('./service-worker');
+    const serviceWorker = require('./service-worker');
     // If you want your app to work offline and load faster, you can change
     // unregister() to register() below. Note this comes with some pitfalls.
     serviceWorker.register();
@@ -49,6 +53,7 @@ async function connect() {
 elm("bt").onclick = () => connect();
 elm("bt-dc").onclick = () => heg.disconnect();
 elm("bt-stats-toggle").onclick = () => heg.setState({ showBtStats: !heg.getState().showBtStats });
+elm("bt-send-command").onclick = () => heg.sendCommand((elm("bt-command") as any).value);
 
 heg.subscribe(({ showBtStats }) => {
     elm("bt-stats").className = showBtStats ? "" : "hide";

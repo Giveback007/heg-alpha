@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node info && parcel ./src/index.html",
+    "clean": "rmdir /S /Q dist ; rmdir /S /Q .cache || exit 0",
+    "start": "npm run clean && node info && parcel ./src/index.html",
     "build": "parcel build ./src/index.html",
     "postbuild": "workbox generateSW"
   },
@@ -13,9 +14,13 @@
   "dependencies": {
     "@giveback007/util-lib": "^0.16.4",
     "material-design-icons-iconfont": "^6.1.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "tslib": "^2.0.3"
   },
   "devDependencies": {
+    "@types/react": "^16.9.56",
+    "@types/react-dom": "^16.9.9",
     "@types/web-bluetooth": "0.0.9",
     "parcel-bundler": "^1.12.4",
     "sass": "^1.27.0",

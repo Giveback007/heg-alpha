@@ -14,10 +14,16 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
 
-    <div>
+    <div style="display: none;">
       <button id="bt"><i class="material-icons">bluetooth</i></button>
       <button id="bt-dc"><i class="material-icons">bluetooth_disabled</i></button>
       <button id="bt-stats-toggle"><i class="material-icons">perm_data_setting</i></button>
+    </div>
+
+    <div style="display: none;">
+      <br/>
+      <input id="bt-command"/>
+      <button id="bt-send-command">SEND</button>
     </div>
 
     <div id="bt-stats">
@@ -32,7 +38,7 @@
     <div id="output"></div>
 
     
-    <script src="./index.ts"></script>
+    <script src="./index.tsx"></script>
     <script>
         // https://developers.google.com/web/tools/workbox/modules/workbox-cli
         // it is needed because parcel will not recognize this as a file and not precess in its manner
