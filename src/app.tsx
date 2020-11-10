@@ -1,18 +1,10 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { Menu } from './components/menu';
 
 export class App extends React.Component {
     render() {
         return <div id="app">
             <Menu />
-        </div>
-    }
-}
-
-class Menu extends React.Component {
-    render() {
-        return <div id="menu">
-
         </div>
     }
 }
