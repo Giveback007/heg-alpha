@@ -1,7 +1,21 @@
 import React = require('react');
 import { SmoothieChart, TimeSeries } from "smoothie";
+import { store } from '../store';
 
-export class Chart extends React.Component<{}, {}> {
+type S = {
+    showGraph: boolean;
+}
+
+export class Chart extends React.Component<{}, S> {
+    state = {
+        showGraph: false
+    }
+
+    sub: any;
+
+    componentWillUnmount() {
+        this.sub.unsubscribe();
+    }
 
     canvasRef = React.createRef<HTMLCanvasElement>();
     canvasElm: HTMLCanvasElement = null as any;
@@ -36,14 +50,17 @@ export class Chart extends React.Component<{}, {}> {
         }, 500);
 
         addEventListener('resize', () => this.updateCanvasSize());
+
+        this.sub = store.subscribe(({ showGraph }) => this.setState({ showGraph }))
     }
 
-    render = () => <canvas
+    render = (s = this.state) => <canvas
         ref={this.canvasRef}
         style={{
             display: 'block',
             position: 'fixed',
-            bottom: 0
+            bottom: 0,
+            visibility: s.showGraph ? "initial" : "hidden"
         }}
     />;
     

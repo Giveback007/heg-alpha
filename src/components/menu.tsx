@@ -1,8 +1,8 @@
 import './menu.sass'
 import React = require('react');
 import { store } from '../store';
-import { AppBar, createStyles, Divider, Drawer, fade, IconButton, withStyles, Theme, Toolbar } from '@material-ui/core';
-import { AppsIcon, ChevronLeftIcon, MenuIcon } from './icons';
+import { AppBar, Divider, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, Toolbar } from '@material-ui/core';
+import { AppsIcon, ChevronLeftIcon, InboxIcon, MailIcon, MenuIcon, ShowChartIcon } from './icons';
 
 // const useStyles = withStyles((theme: Theme) =>
 //   createStyles({
@@ -69,56 +69,72 @@ export class MenuApp extends React.Component<{}, S> {
                 </div>
             </div> */}
 
-        <AppBar position="static">
-            <Toolbar>
-                <IconButton
-                    edge="start"
-                    color="inherit"
-                    aria-label="menu"
-                    onClick={this.toggleMenu}
-                > <MenuIcon /> </IconButton>
-
-                <div>
+            <AppBar position="static">
+                <Toolbar>
                     <IconButton
-                            edge="end"
-                            // aria-label="account of current user"
-                            // aria-controls={menuId}
-                            aria-haspopup="true"
-                            // onClick={handleProfileMenuOpen}
-                            // color="inherit"
+                        edge="start"
+                        color="inherit"
+                        aria-label="menu"
+                        onClick={this.toggleMenu}
+                    > <MenuIcon /> </IconButton>
+
+                    <div>
+                        <IconButton
+                            onClick={() => store.setState({ showGraph: !store.getState().showGraph })}
                         >
-                            <AppsIcon />
+                            <ShowChartIcon />
+                        </IconButton>
+                        <IconButton
+                                edge="end"
+                                // aria-label="account of current user"
+                                // aria-controls={menuId}
+                                aria-haspopup="true"
+                                onClick={() => store.setState({ showApplets: !store.getState().showApplets })}
+                                // color="inherit"
+                            >
+                                <AppsIcon />
+                        </IconButton>
+
+                    </div>
+                </Toolbar>
+
+                {/* <div>
+
+                    <IconButton
+                        edge="end"
+                        // aria-label="account of current user"
+                        // aria-controls={menuId}
+                        aria-haspopup="true"
+                        // onClick={handleProfileMenuOpen}
+                        // color="inherit"
+                    >
+                        <AppsIcon />
+                    </IconButton>
+                </div> */}
+            </AppBar>
+
+            <Drawer
+                anchor='left'
+                open={s.showMenu}
+                onClose={this.toggleMenu}
+            >
+                <div>
+                    <IconButton onClick={this.toggleMenu}>
+                        <ChevronLeftIcon />
                     </IconButton>
                 </div>
-            </Toolbar>
-
-            {/* <div>
-
-                <IconButton
-                    edge="end"
-                    // aria-label="account of current user"
-                    // aria-controls={menuId}
-                    aria-haspopup="true"
-                    // onClick={handleProfileMenuOpen}
-                    // color="inherit"
-                >
-                    <AppsIcon />
-                </IconButton>
-            </div> */}
-        </AppBar>
-
-        <Drawer
-            anchor='left'
-            open={s.showMenu}
-            onClose={this.toggleMenu}
-        >
-            <div>
-                <IconButton onClick={this.toggleMenu}>
-                    <ChevronLeftIcon />
-                </IconButton>
-            </div>
-            <Divider />
-        </Drawer>
+                <Divider />
+                <List>
+                    <ListItem button>
+                        <ListItemIcon><InboxIcon /></ListItemIcon>
+                        <ListItemText primary="Item 1" />
+                    </ListItem>
+                    <ListItem button>
+                        <ListItemIcon><MailIcon /></ListItemIcon>
+                        <ListItemText primary="Item 2" />
+                    </ListItem>
+                </List>
+            </Drawer>
 
         </>
     }
