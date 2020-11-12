@@ -1,14 +1,17 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import React = require('react');
+import ReactDOM = require('react-dom');
 
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { App }  from './app';
 import { hegConnection } from './heg-connection';
-import { main } from './main'
 import { elm } from './util/util';
 
-ReactDOM.render(<App/>, document.getElementById('root'));
+ReactDOM.render(
+    <><CssBaseline/><App/></>,
+    document.getElementById('root')
+);
 
-main(); // import test
+
 
 if (process.env.NODE_ENV === 'development') {
     console.log('DEV MODE')
@@ -21,6 +24,8 @@ if (process.env.NODE_ENV === 'production') {
     // unregister() to register() below. Note this comes with some pitfalls.
     serviceWorker.register();
 }
+
+
 
 // -- Util -- //
 function bleNotification([

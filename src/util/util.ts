@@ -1,3 +1,5 @@
+import { viewSize } from '@giveback007/util-lib/dist/browser';
+
 export const elm = (id: string) => {
     const el = document.getElementById(id);
     if (!el) {
@@ -8,5 +10,5 @@ export const elm = (id: string) => {
     return el;
 };
 
-// const sleeper = (ms: number) => <T>(x: T): Promise<T> => 
-//     new Promise(resolve => setTimeout(() => resolve(x), ms));
+export const onViewResize = (f: (o: { height: number, width: number }) => any) =>
+    window.addEventListener('resize', () => f(viewSize()));

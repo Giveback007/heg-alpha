@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { Menu } from './components/menu';
+import { Chart } from './components/chart';
+import { MenuApp } from './components/menu';
 
 export class App extends React.Component {
     render() {
-        return <div id="app">
-            <Menu />
-        </div>
+        return <>
+            <MenuApp />
+            <Chart />
+        </>
     }
 }
 
