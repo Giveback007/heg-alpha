@@ -1,7 +1,7 @@
 import './applets.sass'
 import React = require('react');
 import { Component } from 'react'
-import { Card, CardActionArea, CardContent, CardMedia, Grid, Typography } from '@material-ui/core';
+import { Card, CardActionArea, CardContent, CardHeader, CardMedia, Grid, Typography } from '@material-ui/core';
 import { store } from '../../store';
 
 const circleJPG = require('./circle.jpg');
@@ -56,24 +56,14 @@ export class AppletsMenu extends React.Component<{}, S> {
 
     render(s = this.state) {
 
-        const applets = s.applets.map(({ icon, name }, i) => (
-            <Grid item key={i}>
-                <Card style={{ width: 200 }}>
-                    <CardActionArea>
-                        {/* <CardHeader title={} /> */}
-                        <CardMedia
-                            // className={classes.media}
-                            style={{height: 100}}
-                            image={icon}
-                        />
-                        
-                        <CardContent>
-                            <Typography gutterBottom component="h2">{name}</Typography>
-                        </CardContent>
-                    </CardActionArea>
-                </Card>
-             </Grid>
-        ))
+        const applets = s.applets.map(({ icon, name }, i) =>
+            <Grid item key={i}><Card>
+                <CardActionArea>
+                    <CardMedia image={icon}/>
+                    <CardHeader title={name} />
+                </CardActionArea>
+            </Card></Grid>
+        );
 
         return (s.showApplets ? <>
             <div

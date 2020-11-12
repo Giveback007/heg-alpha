@@ -13,13 +13,20 @@
     
 #applets
     pointer-events: none
-    position: fixed
+    position: absolute
     z-index: 2001
-    top: 50%
-    left: 50%
-    transform: translate(-50%, -50%)
-    width: 100vw
-    padding: 20px
-    button
+    padding: 5vw
+    .MuiCard-root
+        width: 200px
         pointer-events: all
+    .MuiCardMedia-root
+        height: 100px
+
+@media (max-width: 460px)
+    #applets
+        .MuiCard-root
+            width: 145px
+        .MuiCardMedia-root
+            height: 75px
+
     
