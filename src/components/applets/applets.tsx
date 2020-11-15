@@ -73,7 +73,6 @@ export class AppletsMenu extends React.Component<{}, S> {
             <div id="applets">
                 <Grid
                     container
-                    spacing={3}
                     justify="center"
                 >{applets}</Grid>
             </div>

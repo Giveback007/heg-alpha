@@ -14,8 +14,12 @@
 #applets
     pointer-events: none
     position: absolute
+    left: 0
+    width: 100vw
     z-index: 2001
-    padding: 5vw
+    padding-top: 20px
+    .MuiGrid-item
+        padding: 7px
     .MuiCard-root
         width: 200px
         pointer-events: all
@@ -24,9 +28,9 @@
 
 @media (max-width: 460px)
     #applets
+        width: auto
         .MuiCard-root
             width: 145px
         .MuiCardMedia-root
-            height: 75px
-
+            height: 80px
     

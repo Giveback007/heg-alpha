@@ -1,33 +1,8 @@
 import './menu.sass'
 import React = require('react');
-import { store } from '../store';
+import { heg, store } from '../../store';
 import { AppBar, Divider, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, Toolbar } from '@material-ui/core';
-import { AppsIcon, ChevronLeftIcon, InboxIcon, MailIcon, MenuIcon, ShowChartIcon } from './icons';
-
-// const useStyles = withStyles((theme: Theme) =>
-//   createStyles({
-//     grow: {
-//       flexGrow: 1,
-//     },
-//     menuButton: {
-//       marginRight: theme.spacing(2),
-//     },
-//     sectionDesktop: {
-//       display: 'none',
-//       [theme.breakpoints.up('md')]: {
-//         display: 'flex',
-//       },
-//     },
-//     sectionMobile: {
-//       display: 'flex',
-//       [theme.breakpoints.up('md')]: {
-//         display: 'none',
-//       },
-//     },
-//   }),
-// );
-
-// const classes = useStyles();
+import { AppsIcon, BluetoothIcon, ChevronLeftIcon, InboxIcon, MailIcon, MenuIcon, RefreshIcon, ShowChartIcon } from '../icons';
 
 const menuItems = [
     {
@@ -35,8 +10,6 @@ const menuItems = [
         function: () => store.setState({ showGraph: !store.getState().showGraph })
     }
 ];
-
-// const classes = useStyles();
 
 type S = {
     showMenu: boolean;
@@ -49,26 +22,18 @@ export class MenuApp extends React.Component<{}, S> {
 
     toggleMenu = () => this.setState({ showMenu: !this.state.showMenu });
 
+    async btConnect() {
+        await heg.connect();
+        heg.startReadingHEG();
+    
+        heg.subscribe(({ lastVal }) => {
+            console.clear();
+            console.log(lastVal);
+        });
+    }
+
     render(s = this.state) {
         return <>
-
-            {/* <div
-                id="menu-open"
-                className="menu-icon"
-                onClick={this.toggleMenu}
-            ><i className="material-icons">menu</i></div>
-
-            <div id="menu" className={s.showMenu ? "" : "hide"}>
-                <div id="menu-header">
-                    <h2>HEG alpha</h2>
-                    <div
-                        id="menu-close"
-                        className="menu-icon"
-                        onClick={this.toggleMenu}
-                    ><i className="material-icons">close</i></div>
-                </div>
-            </div> */}
-
             <AppBar position="static">
                 <Toolbar>
                     <IconButton
@@ -80,37 +45,33 @@ export class MenuApp extends React.Component<{}, S> {
 
                     <div>
                         <IconButton
+                            color="inherit"
+                        >
+                            <RefreshIcon />
+                        </IconButton>
+                        <IconButton
+                            color="inherit"
+                            onClick={this.btConnect}
+                        >
+                            <BluetoothIcon />
+                        </IconButton>
+                        <IconButton
+                            color="inherit"
                             onClick={() => store.setState({ showGraph: !store.getState().showGraph })}
                         >
                             <ShowChartIcon />
                         </IconButton>
                         <IconButton
                                 edge="end"
-                                // aria-label="account of current user"
-                                // aria-controls={menuId}
                                 aria-haspopup="true"
                                 onClick={() => store.setState({ showApplets: !store.getState().showApplets })}
-                                // color="inherit"
+                                color="inherit"
                             >
                                 <AppsIcon />
                         </IconButton>
 
                     </div>
                 </Toolbar>
-
-                {/* <div>
-
-                    <IconButton
-                        edge="end"
-                        // aria-label="account of current user"
-                        // aria-controls={menuId}
-                        aria-haspopup="true"
-                        // onClick={handleProfileMenuOpen}
-                        // color="inherit"
-                    >
-                        <AppsIcon />
-                    </IconButton>
-                </div> */}
             </AppBar>
 
             <Drawer

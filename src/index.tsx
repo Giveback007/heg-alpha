@@ -3,7 +3,7 @@ import ReactDOM = require('react-dom');
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { App }  from './app';
-import { hegConnection } from './heg-connection';
+import { heg } from './store';
 import { elm } from './util/util';
 
 ReactDOM.render(
@@ -28,37 +28,37 @@ if (process.env.NODE_ENV === 'production') {
 
 
 // -- Util -- //
-function bleNotification([
-    mcrs, red, infr, ratio, ambient, _1stDer, _2ndDer
-]: string[]) {
-    elm("output").innerHTML = `
-        <div>mrcs: ${mcrs}</div>
-        <div>red: ${red}</div>
-        <div>infr: ${infr}</div>
-        <div>ratio: ${ratio}</div>
-        <div>ambnt: ${ambient}</div>
-        <div>1st d: ${_1stDer}</div>
-        <div>2nd d: ${_2ndDer}</div>
-    `;
-}
+// function bleNotification([
+//     mcrs, red, infr, ratio, ambient, _1stDer, _2ndDer
+// ]: string[]) {
+//     elm("output").innerHTML = `
+//         <div>mrcs: ${mcrs}</div>
+//         <div>red: ${red}</div>
+//         <div>infr: ${infr}</div>
+//         <div>ratio: ${ratio}</div>
+//         <div>ambnt: ${ambient}</div>
+//         <div>1st d: ${_1stDer}</div>
+//         <div>2nd d: ${_2ndDer}</div>
+//     `;
+// }
 
 // -- Bluetooth -- //
-const heg = new hegConnection();
+// const heg = new hegConnection();
 
-async function connect() {
-    await heg.connect();
-    heg.startReadingHEG();
+// async function connect() {
+//     await heg.connect();
+//     heg.startReadingHEG();
 
-    heg.subscribe(({ lastVal }) => {
-        const arr = lastVal.replace(/[\n\r]+/g, '').split('|');
-        bleNotification(arr);
-    });
-}
+//     heg.subscribe(({ lastVal }) => {
+//         const arr = lastVal.replace(/[\n\r]+/g, '').split('|');
+//         bleNotification(arr);
+//     });
+// }
 
-elm("bt").onclick = () => connect();
-elm("bt-dc").onclick = () => heg.disconnect();
-elm("bt-stats-toggle").onclick = () => heg.setState({ showBtStats: !heg.getState().showBtStats });
-elm("bt-send-command").onclick = () => heg.sendCommand((elm("bt-command") as any).value);
+// elm("bt").onclick = () => connect();
+// elm("bt-dc").onclick = () => heg.disconnect();
+// elm("bt-stats-toggle").onclick = () => heg.setState({ showBtStats: !heg.getState().showBtStats });
+// elm("bt-send-command").onclick = () => heg.sendCommand((elm("bt-command") as any).value);
 
 heg.subscribe(({ showBtStats }) => {
     elm("bt-stats").className = showBtStats ? "" : "hide";

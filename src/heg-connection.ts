@@ -14,10 +14,16 @@ const elm = (id: string) => {
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8");
 
+type hegData = {
+    red: number;
+    ir: number;
+    ratio: number;
+}
+
 type State = {
     showBtStats: boolean;
-    data: string[];
-    lastVal: string;
+    data: hegData[];
+    lastVal: hegData;
 }
 
 export class hegConnection extends StateManager<State> {
@@ -31,11 +37,12 @@ export class hegConnection extends StateManager<State> {
     private characteristic: BluetoothRemoteGATTCharacteristic | null = null;
 
     private doReadHeg = false;
+    
     constructor() {
         super({
-            showBtStats: false,
+            showBtStats: true,
             data: [],
-            lastVal: '',
+            lastVal: {} as hegData,
         });
 
         elm("bt-stats-off").onclick = () => this.setState({ showBtStats: false });
@@ -86,17 +93,32 @@ export class hegConnection extends StateManager<State> {
             throw "error";
         }
 
+        await this.sendCommand('o');
         await this.sendCommand('t');
         this.doReadHeg = true;
         
-        const data: string[] = [];
+        const data: hegData[] = [];
+
+        this.characteristic.startNotifications();
+        this.characteristic.addEventListener('characteristicvaluechanged', (e) => {
+            if (!this.doReadHeg) return;
+            console.log(e);
+            debugger;
+        });
+
+        return;
+
         while (this.doReadHeg) {
-            const val = decoder.decode(await this.characteristic.readValue());
-            if (val !== data[data.length]) {
+            const rawVal = decoder.decode(await this.characteristic.readValue());
+            const arr = rawVal.split('|').map(x => Number(x));
+            const val: hegData = { red: arr[0], ir: arr[1], ratio: arr[2], }
+
+            if (val.ratio > 0) {
                 data[data.length] = val;
                 this.setState({ data: [...data], lastVal: val });
                 this.n++;
             }
+            
         }
     }
 
