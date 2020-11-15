@@ -1,4 +1,4 @@
-import { interval } from '@giveback007/util-lib';
+import { interval, isType } from '@giveback007/util-lib';
 import { StateManager } from "@giveback007/util-lib/dist/browser/state-manager";
 
 const elm = (id: string) => {
@@ -93,23 +93,20 @@ export class hegConnection extends StateManager<State> {
             throw "error";
         }
 
-        await this.sendCommand('o');
+        await this.sendCommand('o'); // 20bit
         await this.sendCommand('t');
         this.doReadHeg = true;
         
         const data: hegData[] = [];
 
         this.characteristic.startNotifications();
-        this.characteristic.addEventListener('characteristicvaluechanged', (e) => {
+        this.characteristic.addEventListener('characteristicvaluechanged', (ev) => {
             if (!this.doReadHeg) return;
-            console.log(e);
-            debugger;
-        });
+            const value = (ev.target as BluetoothRemoteGATTCharacteristic)?.value;
 
-        return;
+            if (!value) return;
 
-        while (this.doReadHeg) {
-            const rawVal = decoder.decode(await this.characteristic.readValue());
+            const rawVal = decoder.decode(value);
             const arr = rawVal.split('|').map(x => Number(x));
             const val: hegData = { red: arr[0], ir: arr[1], ratio: arr[2], }
 
@@ -118,8 +115,7 @@ export class hegConnection extends StateManager<State> {
                 this.setState({ data: [...data], lastVal: val });
                 this.n++;
             }
-            
-        }
+        });
     }
 
     async stopReadingHEG() {

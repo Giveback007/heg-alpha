@@ -25,11 +25,6 @@ export class MenuApp extends React.Component<{}, S> {
     async btConnect() {
         await heg.connect();
         heg.startReadingHEG();
-    
-        heg.subscribe(({ lastVal }) => {
-            console.clear();
-            console.log(lastVal);
-        });
     }
 
     render(s = this.state) {
