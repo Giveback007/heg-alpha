@@ -3,15 +3,16 @@ import ReactDOM = require('react-dom');
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { App }  from './app';
+import { elm, now } from './util/util';
+import { HegData } from './heg-connection';
+import { average, wait } from '@giveback007/util-lib';
+import { chartT } from './components/chart';
 import { heg } from './store';
-import { elm } from './util/util';
 
 ReactDOM.render(
     <><CssBaseline/><App/></>,
     document.getElementById('root')
 );
-
-
 
 if (process.env.NODE_ENV === 'development') {
     console.log('DEV MODE')
@@ -25,6 +26,38 @@ if (process.env.NODE_ENV === 'production') {
     serviceWorker.register();
 }
 
+heg.subscribe(({ lastVal }) => {
+    // console.log(lastVal.ratio);
+    
+    elm('ratio').innerHTML = 'ratio: ' + lastVal.sma30.toFixed(2);
+})
+
+const simData: HegData[] = require('../sim-data.json');
+async function test2() {
+    console.log('Start');
+    const startTime = now();
+    
+    let i = 0;
+    const data: HegData[] = [];
+    while (i < simData.length) {
+        const x = simData[i];
+        while(now() < startTime + x.time) await wait(1);
+
+        // -- Sim code -- //
+        data[i] = x;
+        const sArr = data.slice(-40).map(x => x.ratio);
+        const sma = average(sArr);
+
+        chartT.append(now(), sma);
+        console.log(sma);
+        
+        // -- Sim code -- //
+
+        i++;
+    }
+}
+
+// test2();
 
 
 // -- Util -- //
@@ -43,8 +76,6 @@ if (process.env.NODE_ENV === 'production') {
 // }
 
 // -- Bluetooth -- //
-// const heg = new hegConnection();
-
 // async function connect() {
 //     await heg.connect();
 //     heg.startReadingHEG();
@@ -60,7 +91,20 @@ if (process.env.NODE_ENV === 'production') {
 // elm("bt-stats-toggle").onclick = () => heg.setState({ showBtStats: !heg.getState().showBtStats });
 // elm("bt-send-command").onclick = () => heg.sendCommand((elm("bt-command") as any).value);
 
-heg.subscribe(({ showBtStats }) => {
-    elm("bt-stats").className = showBtStats ? "" : "hide";
-})
+// function test() {
+//     let sub: any;
+//     let timeStart: number;
 
+//     sub = heg.subscribe(({ isConnected }) => {
+//         if (!isConnected) return;
+//         timeStart = now();
+//         sub.unsubscribe();
+//     });
+
+//     heg.subscribe(({ data }) => {
+//         if (data.length === 1000) console.log('READY!');
+//         window.data = { timeStart, data };
+//     });
+// }
+
+// test();

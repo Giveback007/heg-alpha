@@ -2,6 +2,8 @@ import React = require('react');
 import { SmoothieChart, TimeSeries } from "smoothie";
 import { store, heg } from '../store';
 
+export const chartT = new TimeSeries();
+
 type S = { showGraph: boolean; }
 
 export class Chart extends React.Component<{}, S> {
@@ -16,24 +18,24 @@ export class Chart extends React.Component<{}, S> {
 
     canvasRef = React.createRef<HTMLCanvasElement>();
     canvasElm: HTMLCanvasElement = null as any;
-    timeSeries = new TimeSeries();
+    timeSeries = chartT;//new TimeSeries();
     
     updateCanvasSize(cvs = this.canvasElm) {
         cvs.width = window.innerWidth;
-        cvs.height = 150
+        cvs.height = 200
     }
 
     createTimeline(canvasElm: HTMLCanvasElement) {
+        // has "responsive"
         const chart = new SmoothieChart({
             minValue: 0,
-            maxValue: 3
+            // responsive: true
         });
 
         chart.addTimeSeries(this.timeSeries, {
             strokeStyle: 'rgba(0, 255, 0, 1)',
             fillStyle: 'rgba(0, 255, 0, 0.2)',
-            lineWidth: 5,
-            
+            lineWidth: 5
         });
 
         chart.streamTo(canvasElm, 500);
@@ -48,7 +50,7 @@ export class Chart extends React.Component<{}, S> {
 
         addEventListener('resize', () => this.updateCanvasSize());
 
-        this.hegSub = heg.subscribe(({ lastVal }) => { this.timeSeries.append(new Date().getTime(), lastVal.ratio) });
+        this.hegSub = heg.subscribe(({ lastVal }) => { this.timeSeries.append(lastVal.time, lastVal.sma30) });
         this.storeSub = store.subscribe(({ showGraph }) => this.setState({ showGraph }));
     }
 

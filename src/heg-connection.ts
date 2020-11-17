@@ -1,5 +1,6 @@
-import { interval, isType } from '@giveback007/util-lib';
+import { average, interval } from '@giveback007/util-lib';
 import { StateManager } from "@giveback007/util-lib/dist/browser/state-manager";
+import { now } from './util/util';
 
 const elm = (id: string) => {
     const el = document.getElementById(id);
@@ -14,7 +15,9 @@ const elm = (id: string) => {
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8");
 
-type hegData = {
+export type HegData = {
+    sma30: number;
+    time: number;
     red: number;
     ir: number;
     ratio: number;
@@ -22,8 +25,9 @@ type hegData = {
 
 type State = {
     showBtStats: boolean;
-    data: hegData[];
-    lastVal: hegData;
+    isConnected: boolean;
+    data: HegData[];
+    lastVal: HegData;
 }
 
 export class hegConnection extends StateManager<State> {
@@ -41,26 +45,35 @@ export class hegConnection extends StateManager<State> {
     constructor() {
         super({
             showBtStats: true,
+            isConnected: false,
             data: [],
-            lastVal: {} as hegData,
+            lastVal: {} as HegData
         });
 
         elm("bt-stats-off").onclick = () => this.setState({ showBtStats: false });
+
+        this.subscribe(({ showBtStats }) => {
+            elm("bt-stats").className = showBtStats ? "" : "hide";
+        })
     }
 
-    private n = 0;
+    private filtSPSn = 0;
+    private unfiltSPSn = 0;
     private intv = interval(() => {
-        const n = this.n;
+        const n = this.filtSPSn;
+        const u = this.unfiltSPSn;
         const d = this.device;
         
         if (this.getState().showBtStats) {
-            elm('device-sps').innerHTML = n ? n + '' : '--';
+            elm('device-sps').innerHTML = n ? `${n} | ${(n/u * 100).toFixed(0)}%`  : '--';
+            elm('device-ufsps').innerHTML = u ? u + '' : '--';
             elm("device").innerHTML = (d ? d.name : '--') + '';
-            elm("device-id").innerHTML = (d ? d.id : '--') + '';;
+            elm("device-id").innerHTML = (d ? d.id : '--') + '';
             elm("device-connected").innerHTML = (d ? d.gatt?.connected : '--') + '';
         }
-        
-        this.n = 0;
+   
+        this.filtSPSn = 0;
+        this.unfiltSPSn = 0;
     }, 1000);
 
     async connect() {
@@ -79,12 +92,14 @@ export class hegConnection extends StateManager<State> {
         this.cmdChar = await service.getCharacteristic(this.rxUUID);
         
         this.characteristic = await service.getCharacteristic(this.txUUID);
+        this.setState({ isConnected: true });
         return true;
     }
 
     async disconnect() {
         await this.stopReadingHEG();
         this.server?.disconnect();
+        this.setState({ isConnected: false });
     }
 
     async startReadingHEG() {
@@ -97,24 +112,45 @@ export class hegConnection extends StateManager<State> {
         await this.sendCommand('t');
         this.doReadHeg = true;
         
-        const data: hegData[] = [];
+        const rawRatio: number[] = [];
+
+        const data: HegData[] = [];
+        const ratio: number[] = [];
 
         this.characteristic.startNotifications();
         this.characteristic.addEventListener('characteristicvaluechanged', (ev) => {
             if (!this.doReadHeg) return;
-            const value = (ev.target as BluetoothRemoteGATTCharacteristic)?.value;
+            this.unfiltSPSn++;
+            const dataView = (ev.target as BluetoothRemoteGATTCharacteristic)?.value;
+            const rawVal = decoder.decode(dataView);
 
-            if (!value) return;
+            if (!rawVal) return;
 
-            const rawVal = decoder.decode(value);
             const arr = rawVal.split('|').map(x => Number(x));
-            const val: hegData = { red: arr[0], ir: arr[1], ratio: arr[2], }
 
-            if (val.ratio > 0) {
-                data[data.length] = val;
-                this.setState({ data: [...data], lastVal: val });
-                this.n++;
+            // filter NaN and negative values
+            if (!arr[2] || arr[2] < 0) return;
+
+            rawRatio[rawRatio.length] = arr[2];
+            
+            // Filter values that are 40% out of raw average
+            const rawSMA = average(rawRatio.slice(-60));
+            if (arr[2] < rawSMA * 0.6 || arr[2] > rawSMA * 1.4) return;
+
+            const val: HegData = {
+                sma30: 0,
+                time: now(),
+                red: arr[0],
+                ir: arr[1],
+                ratio: arr[2],
             }
+
+            data[data.length] = val;
+            ratio[ratio.length] = val.ratio;
+
+            val.sma30 = average(ratio.slice(-30));
+            this.setState({ data: [...data], lastVal: val });
+            this.filtSPSn++;
         });
     }
 

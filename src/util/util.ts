@@ -12,3 +12,5 @@ export const elm = (id: string) => {
 
 export const onViewResize = (f: (o: { height: number, width: number }) => any) =>
     window.addEventListener('resize', () => f(viewSize()));
+
+export const now = () => new Date().getTime();

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "clean": "rmdir /S /Q dist ; rmdir /S /Q .cache || exit 0",
-    "start": "npm run clean && node info && parcel ./src/index.html",
+    "ip-info": "node info",
+    "start": "npm run clean && npm run ip-info && parcel ./src/index.html --port 1111",
     "build": "parcel build ./src/index.html",
     "postbuild": "workbox generateSW"
   },
