@@ -3,11 +3,6 @@ import ReactDOM = require('react-dom');
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { App }  from './app';
-import { elm, now } from './util/util';
-import { HegData } from './heg-connection';
-import { average, wait } from '@giveback007/util-lib';
-import { chartT } from './components/chart';
-import { heg } from './store';
 
 ReactDOM.render(
     <><CssBaseline/><App/></>,
@@ -26,36 +21,30 @@ if (process.env.NODE_ENV === 'production') {
     serviceWorker.register();
 }
 
-heg.subscribe(({ lastVal }) => {
-    // console.log(lastVal.ratio);
+// const simData: HegData[] = require('../sim-data.json');
+// async function test2() {
+//     console.log('Start');
+//     const startTime = now();
     
-    elm('ratio').innerHTML = 'ratio: ' + lastVal.sma30.toFixed(2);
-})
+//     let i = 0;
+//     const data: HegData[] = [];
+//     while (i < simData.length) {
+//         const x = simData[i];
+//         while(now() < startTime + x.time) await wait(1);
 
-const simData: HegData[] = require('../sim-data.json');
-async function test2() {
-    console.log('Start');
-    const startTime = now();
-    
-    let i = 0;
-    const data: HegData[] = [];
-    while (i < simData.length) {
-        const x = simData[i];
-        while(now() < startTime + x.time) await wait(1);
+//         // -- Sim code -- //
+//         data[i] = x;
+//         const sArr = data.slice(-40).map(x => x.ratio);
+//         const sma = average(sArr);
 
-        // -- Sim code -- //
-        data[i] = x;
-        const sArr = data.slice(-40).map(x => x.ratio);
-        const sma = average(sArr);
-
-        chartT.append(now(), sma);
-        console.log(sma);
+//         chartT.append(now(), sma);
+//         console.log(sma);
         
-        // -- Sim code -- //
+//         // -- Sim code -- //
 
-        i++;
-    }
-}
+//         i++;
+//     }
+// }
 
 // test2();
 

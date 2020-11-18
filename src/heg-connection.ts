@@ -1,6 +1,6 @@
-import { average, interval } from '@giveback007/util-lib';
+import { interval, min, sec } from '@giveback007/util-lib';
 import { StateManager } from "@giveback007/util-lib/dist/browser/state-manager";
-import { now } from './util/util';
+import { now, sma, timeSma } from './util/util';
 
 const elm = (id: string) => {
     const el = document.getElementById(id);
@@ -16,7 +16,14 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8");
 
 export type HegData = {
+    sma10: number;
     sma30: number;
+    sma1s: number;
+    sma5s: number;
+    sma10s: number;
+    sma30s: number;
+    sma1m: number;
+    sma5m: number;
     time: number;
     red: number;
     ir: number;
@@ -26,6 +33,7 @@ export type HegData = {
 type State = {
     showBtStats: boolean;
     isConnected: boolean;
+    timeConnected: number;
     data: HegData[];
     lastVal: HegData;
 }
@@ -46,6 +54,7 @@ export class hegConnection extends StateManager<State> {
         super({
             showBtStats: true,
             isConnected: false,
+            timeConnected: 0,
             data: [],
             lastVal: {} as HegData
         });
@@ -92,7 +101,7 @@ export class hegConnection extends StateManager<State> {
         this.cmdChar = await service.getCharacteristic(this.rxUUID);
         
         this.characteristic = await service.getCharacteristic(this.txUUID);
-        this.setState({ isConnected: true });
+        this.setState({ isConnected: true, timeConnected: now() });        
         return true;
     }
 
@@ -128,17 +137,24 @@ export class hegConnection extends StateManager<State> {
 
             const arr = rawVal.split('|').map(x => Number(x));
 
-            // filter NaN and negative values
+            // filter NaN && (n < 0) values
             if (!arr[2] || arr[2] < 0) return;
 
             rawRatio[rawRatio.length] = arr[2];
             
             // Filter values that are 40% out of raw average
-            const rawSMA = average(rawRatio.slice(-60));
-            if (arr[2] < rawSMA * 0.6 || arr[2] > rawSMA * 1.4) return;
+            const rawSMA60 = sma(rawRatio, 60);
+            if (arr[2] < rawSMA60 * 0.6 || arr[2] > rawSMA60 * 1.4) return;
 
             const val: HegData = {
+                sma10: 0,
                 sma30: 0,
+                sma1s: 0,
+                sma5s: 0,
+                sma10s: 0,
+                sma30s: 0,
+                sma1m: 0,
+                sma5m: 0,
                 time: now(),
                 red: arr[0],
                 ir: arr[1],
@@ -148,7 +164,16 @@ export class hegConnection extends StateManager<State> {
             data[data.length] = val;
             ratio[ratio.length] = val.ratio;
 
-            val.sma30 = average(ratio.slice(-30));
+            val.sma10 = sma(ratio, 10);
+            val.sma30 = sma(ratio, 30);
+
+            val.sma1s = timeSma(data, sec(1));
+            val.sma5s = timeSma(data, sec(5));
+            val.sma10s = timeSma(data, sec(10));
+            val.sma30s = timeSma(data, sec(30));
+            val.sma1m = timeSma(data, min(1));
+            val.sma5m = timeSma(data, min(5));
+
             this.setState({ data: [...data], lastVal: val });
             this.filtSPSn++;
         });
