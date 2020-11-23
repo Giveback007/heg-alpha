@@ -1,16 +1,6 @@
-import { average, interval, min, sec } from '@giveback007/util-lib';
+import { average, interval, sec } from '@giveback007/util-lib';
 import { StateManager } from "@giveback007/util-lib/dist/browser/state-manager";
-import { hegDataFromTime, now, sma, timeSma } from './util/util';
-
-const elm = (id: string) => {
-    const el = document.getElementById(id);
-    if (!el) {
-        console.log('no element with id: ' + id)
-        throw 'error'
-    }
-    
-    return el;
-};
+import { ratioFromTime, now, sma, timeSma, elm } from './util/util';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8");
@@ -19,6 +9,7 @@ export type HegData = {
     sma10: number;
     sma30: number;
     sma2s: number;
+    avg5s: number;
     avg10s: number;
     avg1m: number;
     avg5m: number;
@@ -125,7 +116,7 @@ export class hegConnection extends StateManager<State> {
         const data: HegData[]       = [];
         
         let secI = 0;
-        let secT = Math.floor(now() / 1000) * 1000 + 1000;
+        let secT = Math.floor(now() / 1000) * 1000 + 2000;
         const secRatio: number[] = [];
         // -- DATA -- //
 
@@ -135,11 +126,8 @@ export class hegConnection extends StateManager<State> {
             const t = now();
 
             if (t >= secT) {
-                let r = hegDataFromTime(data, secT - 1000)
-                if (!r.length) r = [{ ratio: 0.1 } as any];
-
-                secRatio[secI] = (average(r.map(x => x.ratio)));
-                secT = Math.floor(now() / 1000) * 1000 + 1000;
+                secRatio[secI] = ratioFromTime(data, secT - 1000);
+                secT = Math.floor(t / 1000) * 1000 + 1000;
                 secI++;
             }
 
@@ -151,7 +139,7 @@ export class hegConnection extends StateManager<State> {
 
             const arr = rawVal.split('|').map(x => Number(x));
 
-            // filter NaN && (n < 0) values
+            // filter (NaN, 0 & n < 0) values
             if (!arr[2] || arr[2] < 0) return;
 
             rawRatio[rawRatio.length] = arr[2];
@@ -164,6 +152,7 @@ export class hegConnection extends StateManager<State> {
                 sma10: 0,
                 sma30: 0,
                 sma2s: 0,
+                avg5s: 0,
                 avg10s: 0,
                 avg1m: 0,
                 avg5m: 0,
@@ -182,8 +171,9 @@ export class hegConnection extends StateManager<State> {
             val.sma2s = timeSma(data, sec(2));
 
             secRatio[secI] = timeSma(data, sec(1));
-            val.avg10s = average(secRatio.slice(-10));
-            val.avg1m = average(secRatio.slice(-60));
+            val.avg5s = average(secRatio.slice(-6));
+            val.avg10s = average(secRatio.slice(-11));
+            val.avg1m = average(secRatio.slice(-61));
             val.avg5m = average(secRatio.slice(-60 * 5));
 
             this.setState({ data: [...data], lastVal: val });

@@ -19,6 +19,7 @@ export class Chart extends React.Component<{}, S> {
     canvasElm: HTMLCanvasElement = null as any;
 
     t2s = new TimeSeries();
+    t5s = new TimeSeries();
     t10s = new TimeSeries();
     t1m = new TimeSeries();
     t5m = new TimeSeries();
@@ -31,22 +32,14 @@ export class Chart extends React.Component<{}, S> {
     createTimeline(canvasElm: HTMLCanvasElement) {
         // has "responsive"
         const chart = new SmoothieChart({
-            // minValue: 0,
-            // maxValue: 1.5
-            // responsive: true
+            interpolation: 'linear',
             minValueScale: 1.05,
             maxValueScale: 1.05,
             scaleSmoothing: 0.7
         });
 
-        chart.addTimeSeries(this.t2s, {
-            strokeStyle: 'rgba(176, 119, 12, 1)',
-            fillStyle: 'rgba(176, 119, 12, 0.2)',
-            lineWidth: 2
-        });
-
-        chart.addTimeSeries(this.t10s, {
-            strokeStyle: 'rgba(34, 176, 12, 1)',
+        chart.addTimeSeries(this.t5m, {
+            strokeStyle: 'rgba(162, 12, 176, 1)',
             lineWidth: 2
         });
 
@@ -55,10 +48,25 @@ export class Chart extends React.Component<{}, S> {
             lineWidth: 2
         });
 
-        chart.addTimeSeries(this.t5m, {
-            strokeStyle: 'rgba(162, 12, 176, 1)',
+        chart.addTimeSeries(this.t10s, {
+            strokeStyle: 'rgba(34, 176, 12, 1)',
             lineWidth: 2
         });
+
+        chart.addTimeSeries(this.t5s, {
+            strokeStyle: 'rgba(176, 119, 12, 1)',
+            lineWidth: 2
+        });
+
+        chart.addTimeSeries(this.t2s, {
+            strokeStyle: 'rgba(176, 12, 12, 1)',
+            fillStyle: 'rgba(176, 12, 12, 0.2)',
+            lineWidth: 2
+        });
+
+        
+
+        
 
         chart.streamTo(canvasElm, 500);
     }
@@ -75,6 +83,7 @@ export class Chart extends React.Component<{}, S> {
         this.storeSub = store.subscribe(({ showGraph }) => this.setState({ showGraph }));
         this.hegSub = heg.subscribe(({ lastVal: x }) => {
             this.t2s.append(x.time, x.sma2s);
+            this.t5s.append(x.time, x.avg5s);
             this.t10s.append(x.time, x.avg10s);
             this.t1m.append(x.time, x.avg1m);
             this.t5m.append(x.time, x.avg5m);

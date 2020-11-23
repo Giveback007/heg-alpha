@@ -29,12 +29,10 @@ export function timeSma(data: HegData[], ms: number) {
     if (!len) return 0;
 
     const fromTime = data[len - 1].time - ms;
-    const ratios = hegDataFromTime(data, fromTime).map(x => x.ratio);
-
-    return average(ratios);
+    return ratioFromTime(data, fromTime);
 }
 
-export function hegDataFromTime(data: HegData[], fromTime: number) {
+export function ratioFromTime(data: HegData[], fromTime: number) {
     const x: HegData[] = [];
 
     let i = data.length - 1;
@@ -42,6 +40,6 @@ export function hegDataFromTime(data: HegData[], fromTime: number) {
         x.push(data[i]);
         i--;
     }
-    
-    return x;
+
+    return average(x.map(y => y.ratio)) || 0;
 }
