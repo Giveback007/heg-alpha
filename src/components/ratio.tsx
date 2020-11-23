@@ -7,7 +7,7 @@ import { now, nth, unsubAll } from '../util/util';
 export class Ratio extends React.Component {
     state = {
         val: {} as HegData,
-        time: null as number,
+        time: 0,
     };
 
     hegSub: any;
@@ -26,12 +26,10 @@ export class Ratio extends React.Component {
         
         return <>
             <h4>Time: {t}</h4>
-            <h3>SMA 1s : {nth(val.sma1s, 3)}</h3>
-            <h3>SMA 5s : {nth(val.sma5s, 3)}</h3>
-            <h3>SMA 10s: {nth(val.sma10s, 3)}</h3>
-            <h3>SMA 30s: {nth(val.sma30s, 3)}</h3>
-            <h3>SMA 1m : {nth(val.sma1m, 3)}</h3>
-            <h3>SMA 5m : {nth(val.sma5m, 3)}</h3>
+            <h3>sma 2s : {nth(val.sma2s, 3)}</h3>
+            <h3>avg 10s: {nth(val.avg10s, 3)}</h3>
+            <h3>avg 1m : {nth(val.avg1m, 3)}</h3>
+            <h3>avg 5m : {nth(val.avg5m, 3)}</h3>
         </>
     }
 }

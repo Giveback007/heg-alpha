@@ -1,6 +1,6 @@
-import { interval, min, sec } from '@giveback007/util-lib';
+import { average, interval, min, sec } from '@giveback007/util-lib';
 import { StateManager } from "@giveback007/util-lib/dist/browser/state-manager";
-import { now, sma, timeSma } from './util/util';
+import { hegDataFromTime, now, sma, timeSma } from './util/util';
 
 const elm = (id: string) => {
     const el = document.getElementById(id);
@@ -18,12 +18,10 @@ const decoder = new TextDecoder("utf-8");
 export type HegData = {
     sma10: number;
     sma30: number;
-    sma1s: number;
-    sma5s: number;
-    sma10s: number;
-    sma30s: number;
-    sma1m: number;
-    sma5m: number;
+    sma2s: number;
+    avg10s: number;
+    avg1m: number;
+    avg5m: number;
     time: number;
     red: number;
     ir: number;
@@ -121,14 +119,30 @@ export class hegConnection extends StateManager<State> {
         await this.sendCommand('t');
         this.doReadHeg = true;
         
-        const rawRatio: number[] = [];
-
-        const data: HegData[] = [];
-        const ratio: number[] = [];
+        // -- DATA -- //
+        const rawRatio: number[]    = [];
+        const ratio: number[]       = [];
+        const data: HegData[]       = [];
+        
+        let secI = 0;
+        let secT = Math.floor(now() / 1000) * 1000 + 1000;
+        const secRatio: number[] = [];
+        // -- DATA -- //
 
         this.characteristic.startNotifications();
         this.characteristic.addEventListener('characteristicvaluechanged', (ev) => {
-            if (!this.doReadHeg) return;
+            if (!this.doReadHeg) return; // also clear data
+            const t = now();
+
+            if (t >= secT) {
+                let r = hegDataFromTime(data, secT - 1000)
+                if (!r.length) r = [{ ratio: 0.1 } as any];
+
+                secRatio[secI] = (average(r.map(x => x.ratio)));
+                secT = Math.floor(now() / 1000) * 1000 + 1000;
+                secI++;
+            }
+
             this.unfiltSPSn++;
             const dataView = (ev.target as BluetoothRemoteGATTCharacteristic)?.value;
             const rawVal = decoder.decode(dataView);
@@ -149,13 +163,11 @@ export class hegConnection extends StateManager<State> {
             const val: HegData = {
                 sma10: 0,
                 sma30: 0,
-                sma1s: 0,
-                sma5s: 0,
-                sma10s: 0,
-                sma30s: 0,
-                sma1m: 0,
-                sma5m: 0,
-                time: now(),
+                sma2s: 0,
+                avg10s: 0,
+                avg1m: 0,
+                avg5m: 0,
+                time: t,
                 red: arr[0],
                 ir: arr[1],
                 ratio: arr[2],
@@ -167,12 +179,12 @@ export class hegConnection extends StateManager<State> {
             val.sma10 = sma(ratio, 10);
             val.sma30 = sma(ratio, 30);
 
-            val.sma1s = timeSma(data, sec(1));
-            val.sma5s = timeSma(data, sec(5));
-            val.sma10s = timeSma(data, sec(10));
-            val.sma30s = timeSma(data, sec(30));
-            val.sma1m = timeSma(data, min(1));
-            val.sma5m = timeSma(data, min(5));
+            val.sma2s = timeSma(data, sec(2));
+
+            secRatio[secI] = timeSma(data, sec(1));
+            val.avg10s = average(secRatio.slice(-10));
+            val.avg1m = average(secRatio.slice(-60));
+            val.avg5m = average(secRatio.slice(-60 * 5));
 
             this.setState({ data: [...data], lastVal: val });
             this.filtSPSn++;

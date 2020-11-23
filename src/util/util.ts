@@ -1,5 +1,6 @@
-import { AnyObj, average, msToTime, objMap } from '@giveback007/util-lib';
+import { AnyObj, average, objMap } from '@giveback007/util-lib';
 import { viewSize } from '@giveback007/util-lib/dist/browser';
+import { HegData } from '../heg-connection';
 
 export const elm = (id: string) => {
     const el = document.getElementById(id);
@@ -23,18 +24,24 @@ export const nth = (n: number, nth = 2) => (n || 0).toFixed(nth);
 
 export const sma = (arr: number[], n: number) => average(arr.slice(-1 * n))
 
-export const timeSma = (data: HegData[], ms: number) => {
+export function timeSma(data: HegData[], ms: number) {
     const len = data.length;
     if (!len) return 0;
 
     const fromTime = data[len - 1].time - ms;
-    const ratio: number[] = [];
+    const ratios = hegDataFromTime(data, fromTime).map(x => x.ratio);
 
-    let i = len;
-    while (i > 0 && data[i - 1].time >= fromTime) {
+    return average(ratios);
+}
+
+export function hegDataFromTime(data: HegData[], fromTime: number) {
+    const x: HegData[] = [];
+
+    let i = data.length - 1;
+    while (i > 0 && data[i].time >= fromTime) {
+        x.push(data[i]);
         i--;
-        ratio.push(data[i].ratio);
     }
-
-    return average(ratio);
+    
+    return x;
 }
