@@ -1,6 +1,4 @@
-import { AnyObj, average, objMap } from '@giveback007/util-lib';
-import { viewSize } from '@giveback007/util-lib/dist/browser';
-import { HegData } from '../heg-connection';
+import { AnyObj, objMap, hasKey } from '@giveback007/util-lib';
 
 export const elm = (id: string) => {
     const el = document.getElementById(id);
@@ -12,34 +10,16 @@ export const elm = (id: string) => {
     return el;
 };
 
-export const onViewResize = (f: (o: { height: number, width: number }) => any) =>
-    window.addEventListener('resize', () => f(viewSize()));
-
 export const now = () => new Date().getTime();
 
 export const unsubAll = (obj: AnyObj) =>
-    objMap(obj, ({ key, val }) => key === 'unsubscribe' ? val() : null);
+    objMap(obj, ({ val }) => hasKey(val, 'unsubscribe') ? val.unsubscribe() : null);
 
 export const nth = (n: number, nth = 2) => (n || 0).toFixed(nth);
 
-export const sma = (arr: number[], n: number) => average(arr.slice(-1 * n))
+export function numPadSpace(n: number, minLength: number) {
+    let str = n + '';
+    while (str.length < minLength) str = ' ' + str;
 
-export function timeSma(data: HegData[], ms: number) {
-    const len = data.length;
-    if (!len) return 0;
-
-    const fromTime = data[len - 1].time - ms;
-    return ratioFromTime(data, fromTime);
-}
-
-export function ratioFromTime(data: HegData[], fromTime: number) {
-    const x: HegData[] = [];
-
-    let i = data.length - 1;
-    while (i > 0 && data[i].time >= fromTime) {
-        x.push(data[i]);
-        i--;
-    }
-
-    return average(x.map(y => y.ratio)) || 0;
+    return str;
 }
