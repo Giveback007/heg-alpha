@@ -2,7 +2,6 @@ import { average, sec } from '@giveback007/util-lib';
 import { StateManager } from '@giveback007/util-lib/dist/browser';
 import { HegData, HegState, HegTuple } from './heg-connection.type';
 import { genHegData, ratioFromTime, sma, timeSma } from './heg-connection.util';
-import { now } from './util/util';
 
 const decoder = new TextDecoder("utf-8");
 
@@ -13,7 +12,7 @@ export class HegValueChangeHandler {
     private data: HegData[] = [];
     
     private secI = 0;
-    private secT = Math.floor(now() / 1000) * 1000 + 2000;
+    private secT = Math.floor(Date.now() / 1000) * 1000 + 2000;
     private secRatio: number[] = [];
 
     private ufSPS: number = 0;
@@ -37,7 +36,7 @@ export class HegValueChangeHandler {
     }
 
     private handleValue = (ev: Event) => {
-        const t = now();
+        const t = Date.now();
 
         if (t >= this.secT) {
             this.secRatio[this.secI] = ratioFromTime(this.data, this.secT - 1000);
@@ -56,29 +55,31 @@ export class HegValueChangeHandler {
         if (!rawVal) return;
 
         const arr = rawVal.split('|').map(x => Number(x)) as HegTuple;
+        const rt = arr[2]; // ratio
 
         // filter (NaN, 0 & n < 0) values
-        if (!arr[2] || arr[2] < 0) return;
+        if (!rt || rt < 0) return;
 
-        this.rawRatio[this.rawRatio.length] = arr[2];
-        
-        // Filter values that are 30% out of raw average
+        // Filter values 30% out of raw average
+        this.rawRatio[this.rawRatio.length] = rt;
         const rawSMA60 = sma(this.rawRatio, 60);
-        if (arr[2] < rawSMA60 * 0.30 || arr[2] > rawSMA60 * 1.30)
-            return; // console.log((rawSMA60 / arr[2] * 100).toFixed(0) + '%');
+        if (rt < rawSMA60 * 0.7 || rt > rawSMA60 * 1.3) {
+            // console.log((rawSMA60_L1 / arr[2] * 100).toFixed(0) + '%');
+            return;
+        }
 
         const val = genHegData(arr, t);
 
         this.data[this.data.length] = val;
         this.ratio[this.ratio.length] = val.ratio;
 
-        val.sma2s = timeSma(this.data, sec(2));
+        val.sma3s = timeSma(this.data, sec(3));
 
         this.secRatio[this.secI] = timeSma(this.data, sec(1));
-        val.avg5s = average(this.secRatio.slice(-6));
-        val.avg10s = average(this.secRatio.slice(-11));
-        val.avg1m = average(this.secRatio.slice(-61));
-        val.avg5m = average(this.secRatio.slice(-60 * 5));
+        val.avg10s = average(this.secRatio.slice(-10));
+        val.avg1m = average(this.secRatio.slice(-60));
+        val.avg5m = average(this.secRatio.slice(-300));
+        val.avg10m = average(this.secRatio.slice(-600));
 
         this.stateUpdater({ data: [...this.data], lastVal: val });
         this.SPS++;

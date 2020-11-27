@@ -10,8 +10,6 @@ export const elm = (id: string) => {
     return el;
 };
 
-export const now = () => new Date().getTime();
-
 export const unsubAll = (obj: AnyObj) =>
     objMap(obj, ({ val }) => hasKey(val, 'unsubscribe') ? val.unsubscribe() : null);
 

@@ -1,4 +1,3 @@
-import { rand } from '@giveback007/util-lib';
 import { StateManager } from "@giveback007/util-lib/dist/browser/state-manager";
 import { HegData, HegState } from './heg-connection.type';
 import { HegValueChangeHandler } from './heg-value-change-handler';
@@ -6,10 +5,11 @@ import { now, elm, nth, numPadSpace } from './util/util';
 
 const encoder = new TextEncoder();
 
-export class hegConnection extends StateManager<HegState> {
-    private readonly serviceUUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-    private readonly rxUUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
-    private readonly txUUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+const serviceUUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+const rxUUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+const txUUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+
+export class HegConnection extends StateManager<HegState> {
 
     private device: BluetoothDevice | null = null;
     private server: BluetoothRemoteGATTServer | null = null;
@@ -19,10 +19,10 @@ export class hegConnection extends StateManager<HegState> {
     
     constructor() {
         super({
-            data: [],
+            data: [ ],
             isReading: false,
             isConnected: false,
-            lastVal: {} as HegData,
+            lastVal: { } as HegData,
             showBtStats: true,
             SPS: 0,
             ufSPS: 0,
@@ -53,25 +53,25 @@ export class hegConnection extends StateManager<HegState> {
     async connect() {
         this.device = await navigator.bluetooth.requestDevice({
             filters: [{ namePrefix: 'HEG' }],
-            optionalServices: [this.serviceUUID]
+            optionalServices: [serviceUUID]
         });
         
         const btServer = await this.device.gatt?.connect();
         if (!btServer) throw 'no connection';
         this.server = btServer;
     
-        const service = await this.server.getPrimaryService(this.serviceUUID);
+        const service = await this.server.getPrimaryService(serviceUUID);
     
         // Send command to start HEG automatically (if not already started)
-        this.cmdChar = await service.getCharacteristic(this.rxUUID);
+        this.cmdChar = await service.getCharacteristic(rxUUID);
         
-        this.characteristic = await service.getCharacteristic(this.txUUID);
+        this.characteristic = await service.getCharacteristic(txUUID);
 
         this.hegValueChangeHandler = new HegValueChangeHandler(
             this.characteristic, this.setState
         )
 
-        this.setState({ isConnected: true, timeConnected: now() });        
+        this.setState({ isConnected: true, timeConnected: Date.now() });        
         return true;
     }
 
@@ -87,7 +87,7 @@ export class hegConnection extends StateManager<HegState> {
 
         await this.sendCommand('o'); // 20bit
         await this.sendCommand('t');
-        this.setState({ isReading: true })
+        this.setState({ isReading: true });
         
         this.hegValueChangeHandler.start();
     }
@@ -95,19 +95,19 @@ export class hegConnection extends StateManager<HegState> {
     async stopReadingHEG() {
         this.hegValueChangeHandler?.end();
         await this.sendCommand('f');
-        this.setState({ isReading: false })
+        this.setState({ isReading: false });
     }
 
     /** send a command by string:
      * (in) --DEVICE INSTRUCTIONS--
      * https://github.com/moothyknight/HEG_ESP32/blob/master/Device_README.txt
      */
-    async sendCommand(str: string) {
+    async sendCommand(msg: string) {
         if (!this.cmdChar) {
             console.log("HEG not connected");
             throw "error";
         }
 
-        await this.cmdChar.writeValue(encoder.encode(str));
+        await this.cmdChar.writeValue(encoder.encode(msg));
     }
 }
