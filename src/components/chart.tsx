@@ -18,7 +18,7 @@ export class Chart extends React.Component<{}, S> {
     canvasRef = React.createRef<HTMLCanvasElement>();
     canvasElm: HTMLCanvasElement = null as any;
 
-    t3s = new TimeSeries();
+    t2s = new TimeSeries();
     t10s = new TimeSeries();
     t1m = new TimeSeries();
     t5m = new TimeSeries();
@@ -58,7 +58,7 @@ export class Chart extends React.Component<{}, S> {
             lineWidth: 2
         });
 
-        chart.addTimeSeries(this.t3s, {
+        chart.addTimeSeries(this.t2s, {
             strokeStyle: 'rgba(176, 12, 12, 1)',
             fillStyle: 'rgba(176, 12, 12, 0.2)',
             lineWidth: 2
@@ -78,7 +78,7 @@ export class Chart extends React.Component<{}, S> {
 
         this.storeSub = store.subscribe(({ showGraph }) => this.setState({ showGraph }));
         this.hegSub = heg.subscribe(({ lastVal: x }) => {
-            this.t3s.append(x.time, x.sma3s);
+            this.t2s.append(x.time, x.sma2s);
             this.t10s.append(x.time, x.avg10s);
             this.t1m.append(x.time, x.avg1m);
             this.t5m.append(x.time, x.avg5m);

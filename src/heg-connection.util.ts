@@ -24,7 +24,7 @@ export function ratioFromTime(data: HegData[], fromTime: number) {
 }
 
 export const genHegData = (newVal: HegTuple, time: number): HegData => ({
-    sma3s: 0,
+    sma2s: 0,
     avg10s: 0,
     avg1m: 0,
     avg5m: 0,

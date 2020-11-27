@@ -1,5 +1,5 @@
 export type HegData = {
-    sma3s: number;
+    sma2s: number;
     avg10s: number;
     avg1m: number;
     avg5m: number;

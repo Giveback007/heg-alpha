@@ -1,7 +1,7 @@
 import { StateManager } from "@giveback007/util-lib/dist/browser/state-manager";
 import { HegData, HegState } from './heg-connection.type';
 import { HegValueChangeHandler } from './heg-value-change-handler';
-import { now, elm, nth, numPadSpace } from './util/util';
+import { elm, nth, numPadSpace } from './util/util';
 
 const encoder = new TextEncoder();
 
@@ -27,23 +27,25 @@ export class HegConnection extends StateManager<HegState> {
             SPS: 0,
             ufSPS: 0,
             timeConnected: 0,
-        });
+        },
+        // { id: 'HegConnection', useKeys: ['showBtStats'] }
+        );
 
         elm("bt-stats-off").onclick = () => this.setState({ showBtStats: false });
 
-        this.subscribe(({ showBtStats, SPS, ufSPS, isConnected }, prv) => {
+        this.subscribe(isConnected =>
+            elm("device-connected").innerHTML = isConnected + '', 'isConnected');
+
+        this.subscribe(showBtStats =>
+            elm("bt-stats").className = showBtStats ? "" : "hide", 'showBtStats')
+
+        this.subscribe(({ SPS, ufSPS }, prv) => {
             if (prv.SPS !== SPS || prv.ufSPS !== ufSPS) {
                 const unf = ufSPS ? numPadSpace(ufSPS, 2) : '--';
                 const sps = SPS ? `${(SPS + '').padStart(2, ' ')} => ${nth(SPS/ufSPS * 100, 0)}%` : '--';
 
-                elm('device-sps').innerHTML = `${unf}/${sps}`;
+                elm('device-sps').innerHTML = `${unf}|${sps}`;
             }
-            
-            if (prv.isConnected !== isConnected)
-                elm("device-connected").innerHTML = isConnected + '';
-
-            if (prv.showBtStats !== showBtStats)
-                elm("bt-stats").className = showBtStats ? "" : "hide";
         });
     }
 
