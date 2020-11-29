@@ -27,6 +27,7 @@ export class HegConnection extends StateManager<HegState> {
             SPS: 0,
             ufSPS: 0,
             timeConnected: 0,
+            spsErrors: 0,
         },
         // { id: 'HegConnection', useKeys: ['showBtStats'] }
         );
@@ -39,12 +40,13 @@ export class HegConnection extends StateManager<HegState> {
         this.subscribe(showBtStats =>
             elm("bt-stats").className = showBtStats ? "" : "hide", 'showBtStats')
 
-        this.subscribe(({ SPS, ufSPS }, prv) => {
-            if (prv.SPS !== SPS || prv.ufSPS !== ufSPS) {
+        this.subscribe(({ SPS, ufSPS, spsErrors }, prv) => {
+            if (prv.SPS !== SPS || prv.ufSPS !== ufSPS || prv.spsErrors !== spsErrors) {
                 const unf = ufSPS ? numPadSpace(ufSPS, 2) : '--';
                 const sps = SPS ? `${(SPS + '').padStart(2, ' ')} => ${nth(SPS/ufSPS * 100, 0)}%` : '--';
 
                 elm('device-sps').innerHTML = `${unf}|${sps}`;
+                elm("device-sps-errors").innerHTML = `${spsErrors} | ${nth(spsErrors/ufSPS * 100, 0)}%`;
             }
         });
     }

@@ -11,13 +11,15 @@ export class HegValueChangeHandler {
     private ratio: number[] = [];
     private data: HegData[] = [];
     
-    private secI = 0;
+    private secI = 0; // index fo
     private secT = Math.floor(Date.now() / 1000) * 1000 + 1000;
     private secRatio: number[] = [];
 
-    private prevUfSPS: number = 0;
-    private ufSPS: number = 0;
-    private SPS: number = 0;
+    private prevMidSPS: number = 0; // previous midSPS
+    private midSPS: number = 0; // SPS after error filter
+    private spsErrors: number = 0; // number of SPS errors per second
+    private ufSPS: number = 0; // unfiltered SPS
+    private SPS: number = 0; // Samples Per Second
 
     constructor(
         private characteristic: BluetoothRemoteGATTCharacteristic,
@@ -36,18 +38,25 @@ export class HegValueChangeHandler {
         this.stateUpdater({ SPS: 0, ufSPS: 0 });
     }
 
+    private handleSPS({ SPS, ufSPS, spsErrors, midSPS } = this) {
+        this.stateUpdater({ SPS, ufSPS, spsErrors });
+
+        this.prevMidSPS = midSPS;
+        this.spsErrors = 0;
+        this.midSPS = 0;
+        this.SPS = 0;
+        this.ufSPS = 0;
+    }
+
     private handleValue = (ev: Event) => {
         const t = Date.now();
 
         if (t >= this.secT) {
             this.secRatio[this.secI] = ratioFromTime(this.data, this.secT - 1000);
             this.secT = Math.floor(t / 1000) * 1000 + 1000;
-            this.secI++;
+            this.secI++; // ensures that this index only moves once per second
 
-            this.stateUpdater({ SPS: this.SPS, ufSPS: this.ufSPS });
-            this.prevUfSPS = this.ufSPS;
-            this.SPS = 0;
-            this.ufSPS = 0;
+            this.handleSPS();
         }
 
         this.ufSPS++; // FIX
@@ -60,12 +69,14 @@ export class HegValueChangeHandler {
         const rt = arr[2]; // ratio
 
         // filter (NaN, 0 & n < 0) values
-        if (!rt || rt < 0) return;
+        if (!rt || rt < 0) return this.spsErrors++;
+        this.midSPS++;
 
         // Filter values 30% out of raw-average/per-half-second
         this.rawRatio[this.rawRatio.length] = rt;
-        const smaN = Math.ceil(this.prevUfSPS / 2); // half second rawSMA
+        const smaN = Math.ceil(this.prevMidSPS / 2); // half second rawSMA
         const rawSMA = sma(this.rawRatio, smaN > 5 ? smaN : 5);
+        
         if (rt < rawSMA * 0.7 || rt > rawSMA * 1.3) {
             // rt = arrLast(this.ratio);
             // console.log((rawSMA5 / arr[2] * 100).toFixed(0) + '%');

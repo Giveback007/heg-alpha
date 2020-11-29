@@ -19,6 +19,7 @@ export type HegState = {
     timeConnected: number;
     SPS: number;
     ufSPS: number;
+    spsErrors: number;
 }
 
 /** [red, ir, ratio] */
