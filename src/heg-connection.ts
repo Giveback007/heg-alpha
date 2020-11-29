@@ -1,13 +1,28 @@
 import { StateManager } from "@giveback007/util-lib/dist/browser/state-manager";
 import { HegData, HegState } from './heg-connection.type';
 import { HegValueChangeHandler } from './heg-value-change-handler';
-import { elm, nth, numPadSpace } from './util/util';
+import { nth, numPadSpace } from './util/util';
+// import { html, render } from 'lit-html';
+import { elmById } from '@giveback007/util-lib/dist/browser';
 
 const encoder = new TextEncoder();
 
 const serviceUUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
 const rxUUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
 const txUUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+
+// function initializeBtStatsModal() {
+
+//     const x = `<div id="bt-stats">
+//     <div id="bt-stats-title" class="hide">BT Stats</div>
+//     <div>Connected: <span id='device-connected'>--</span></div>
+//     <div>SPS: <span id='device-sps'>--</span></div>
+//     <div>SPS Err: <span id='device-sps-errors'>--</span></div>
+//     <button id="bt-stats-off">X</button>
+//   </div>`
+
+
+// }
 
 export class HegConnection extends StateManager<HegState> {
 
@@ -32,22 +47,16 @@ export class HegConnection extends StateManager<HegState> {
         // { id: 'HegConnection', useKeys: ['showBtStats'] }
         );
 
-        elm("bt-stats-off").onclick = () => this.setState({ showBtStats: false });
+        elmById("bt-stats-off").onclick = () => this.setState({ showBtStats: false });
 
-        this.subscribe(isConnected =>
-            elm("device-connected").innerHTML = isConnected + '', 'isConnected');
+        this.subToKeys(['isConnected', 'showBtStats', 'SPS', 'ufSPS', 'spsErrors'], (s) => {
+            const unf = s.ufSPS ? numPadSpace(s.ufSPS, 2) : '--';
+            const sps = s.SPS ? `${(s.SPS + '').padStart(2, ' ')} => ${nth(s.SPS/s.ufSPS * 100, 0)}%` : '--';
 
-        this.subscribe(showBtStats =>
-            elm("bt-stats").className = showBtStats ? "" : "hide", 'showBtStats')
-
-        this.subscribe(({ SPS, ufSPS, spsErrors }, prv) => {
-            if (prv.SPS !== SPS || prv.ufSPS !== ufSPS || prv.spsErrors !== spsErrors) {
-                const unf = ufSPS ? numPadSpace(ufSPS, 2) : '--';
-                const sps = SPS ? `${(SPS + '').padStart(2, ' ')} => ${nth(SPS/ufSPS * 100, 0)}%` : '--';
-
-                elm('device-sps').innerHTML = `${unf}|${sps}`;
-                elm("device-sps-errors").innerHTML = `${spsErrors} | ${nth(spsErrors/ufSPS * 100, 0)}%`;
-            }
+            elmById('device-sps').innerHTML = `${unf}|${sps}`;
+            elmById("device-sps-errors").innerHTML = `${s.spsErrors} | ${nth(s.spsErrors/s.ufSPS * 100, 0)}%`;
+            elmById("device-connected").innerHTML = s.isConnected + '';
+            elmById("bt-stats").className = s.showBtStats ? "" : "hide"
         });
     }
 

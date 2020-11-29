@@ -1,7 +1,7 @@
+import { unsubAll } from '@giveback007/util-lib';
 import React = require('react');
 import { SmoothieChart, TimeSeries } from "smoothie";
 import { store, heg } from '../store';
-import { unsubAll } from '../util/util';
 
 type S = { showGraph: boolean; }
 

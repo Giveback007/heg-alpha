@@ -72,12 +72,12 @@ export class HegValueChangeHandler {
         if (!rt || rt < 0) return this.spsErrors++;
         this.midSPS++;
 
-        // Filter values 30% out of raw-average/per-half-second
+        // Filter values 35% out of raw-average/per-half-second
         this.rawRatio[this.rawRatio.length] = rt;
         const smaN = Math.ceil(this.prevMidSPS / 2); // half second rawSMA
         const rawSMA = sma(this.rawRatio, smaN > 5 ? smaN : 5);
         
-        if (rt < rawSMA * 0.7 || rt > rawSMA * 1.3) {
+        if (rt < rawSMA * 0.65 || rt > rawSMA * 1.35) {
             // rt = arrLast(this.ratio);
             // console.log((rawSMA5 / arr[2] * 100).toFixed(0) + '%');
             return;
@@ -88,11 +88,12 @@ export class HegValueChangeHandler {
         this.data[this.data.length] = val;
         this.ratio[this.ratio.length] = val.ratio;
 
-        val.sma2s = timeSma(this.data, sec(2));
-
         this.secRatio[this.secI] = timeSma(this.data, sec(1));
+        if (!this.secRatio[this.secI]) return;
+
+        val.sma2s = timeSma(this.data, sec(2));
         val.avg10s = average(this.secRatio.slice(-10));
-        val.avg1m = average(this.secRatio.slice(-60));
+        val.avg1m = average(this.secRatio.slice(-60))
         val.avg5m = average(this.secRatio.slice(-300));
         val.avg10m = average(this.secRatio.slice(-600));
 
