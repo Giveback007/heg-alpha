@@ -20,10 +20,10 @@ export function ratioFromTime(data: HegData[], fromTime: number) {
         i--;
     }
 
-    return average(x.map(y => y.ratio)) || 0;
+    return average(x.map(y => y.smoothRt)) || 0;
 }
 
-export const genHegData = (newVal: HegTuple, time: number): HegData => ({
+export const genHegData = (newVal: HegTuple, time: number, ratios: number[]): HegData => ({
     sma2s: 0,
     sma10s: 0,
     sma1m: 0,
@@ -33,4 +33,5 @@ export const genHegData = (newVal: HegTuple, time: number): HegData => ({
     red: newVal[0],
     ir: newVal[1],
     ratio: newVal[2],
+    smoothRt: average([...ratios, newVal[2]].slice(-3)),
 });

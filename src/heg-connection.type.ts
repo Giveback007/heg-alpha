@@ -8,6 +8,7 @@ export type HegData = {
     red: number;
     ir: number;
     ratio: number;
+    smoothRt: number;
 }
 
 export type HegState = {

@@ -8,6 +8,7 @@ const decoder = new TextDecoder("utf-8");
 export class HegEventHandler {
 
     private rawRatio: number[] = [];
+    private ratio: number[] = [];
     private data: HegData[] = [];
     
     private secT = Math.floor(Date.now() / 1000) * 1000 + 1000;
@@ -74,10 +75,9 @@ export class HegEventHandler {
         if (rt < rawSMA * 0.70 || rt > rawSMA * 1.30)
             return; // console.log((rawSMA5 / arr[2] * 100).toFixed(0) + '%');
 
-        const val = genHegData(arr, t);
-
+        const val = genHegData(arr, t, this.ratio);
         this.data[this.data.length] = val;
-        // this.ratio[this.ratio.length] = val.ratio;
+        this.ratio[this.ratio.length] = val.ratio;
 
         val.sma2s = timeSma(this.data, sec(2));
         val.sma10s = timeSma(this.data, sec(10));
