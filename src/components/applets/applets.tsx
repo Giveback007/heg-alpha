@@ -1,7 +1,7 @@
 import './applets.sass'
 import React = require('react');
 import { Component } from 'react'
-import { Card, CardActionArea, CardHeader, CardMedia, Grid } from '@material-ui/core';
+import { Card, CardActionArea, CardHeader, CardMedia, Grid } from '../material-ui';
 import { store } from '../../store';
 
 const circleJPG = require('./circle.jpg');

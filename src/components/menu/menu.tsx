@@ -1,7 +1,7 @@
 import './menu.sass'
 import React = require('react');
 import { heg, store } from '../../store';
-import { AppBar, Divider, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, Toolbar } from '@material-ui/core';
+import { AppBar, Divider, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, Toolbar } from '../material-ui';
 import { AppsIcon, BluetoothIcon, ChevronLeftIcon, InboxIcon, MailIcon, MenuIcon, RefreshIcon, ShowChartIcon } from '../icons';
 
 const menuItems = [
