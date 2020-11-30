@@ -7,7 +7,7 @@
     "clean": "rmdir /S /Q dist ; rmdir /S /Q .cache || exit 0",
     "ip-info": "node info",
     "start": "npm run clean && npm run ip-info && parcel ./src/index.html --port 1111",
-    "build": "parcel build ./src/index.html",
+    "build": "parcel build ./src/index.html --experimental-scope-hoisting",
     "postbuild": "workbox generateSW"
   },
   "author": "",

@@ -1,4 +1,4 @@
-import { arrLast, average, sec } from '@giveback007/util-lib';
+import { min, sec } from '@giveback007/util-lib';
 import { StateManager } from '@giveback007/util-lib/dist/browser';
 import { HegData, HegState, HegTuple } from './heg-connection.type';
 import { genHegData, ratioFromTime, sma, timeSma } from './heg-connection.util';
@@ -54,12 +54,12 @@ export class HegValueChangeHandler {
         if (t >= this.secT) {
             this.secRatio[this.secI] = ratioFromTime(this.data, this.secT - 1000);
             this.secT = Math.floor(t / 1000) * 1000 + 1000;
-            this.secI++; // ensures that this index only moves once per second
+            this.secI++; // ensures that secI index only moves once per second
 
             this.handleSPS();
         }
 
-        this.ufSPS++; // FIX
+        this.ufSPS++;
         const dataView = (ev.target as BluetoothRemoteGATTCharacteristic)?.value;
         const rawVal = decoder.decode(dataView);
 
@@ -72,12 +72,12 @@ export class HegValueChangeHandler {
         if (!rt || rt < 0) return this.spsErrors++;
         this.midSPS++;
 
-        // Filter values 35% out of raw-average/per-half-second
+        // Filter values 30% out of raw-average/per-half-second
         this.rawRatio[this.rawRatio.length] = rt;
         const smaN = Math.ceil(this.prevMidSPS / 2); // half second rawSMA
         const rawSMA = sma(this.rawRatio, smaN > 5 ? smaN : 5);
         
-        if (rt < rawSMA * 0.65 || rt > rawSMA * 1.35) {
+        if (rt < rawSMA * 0.70 || rt > rawSMA * 1.30) {
             // rt = arrLast(this.ratio);
             // console.log((rawSMA5 / arr[2] * 100).toFixed(0) + '%');
             return;
@@ -92,10 +92,10 @@ export class HegValueChangeHandler {
         if (!this.secRatio[this.secI]) return;
 
         val.sma2s = timeSma(this.data, sec(2));
-        val.avg10s = average(this.secRatio.slice(-10));
-        val.avg1m = average(this.secRatio.slice(-60))
-        val.avg5m = average(this.secRatio.slice(-300));
-        val.avg10m = average(this.secRatio.slice(-600));
+        val.avg10s = timeSma(this.data, sec(10));
+        val.avg1m = timeSma(this.data, min(1));
+        val.avg5m = timeSma(this.data, min(5));
+        val.avg10m = timeSma(this.data, min(10));
 
         this.stateUpdater({ data: [...this.data], lastVal: val });
         this.SPS++;
