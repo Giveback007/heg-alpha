@@ -95,5 +95,4 @@ export class Chart extends React.Component<{}, S> {
             visibility: s.showGraph ? "initial" : "hidden"
         }}
     />;
-    
 }

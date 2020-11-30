@@ -3,6 +3,7 @@ import { HegData, HegTuple } from './heg-connection.type';
 
 export const sma = (arr: number[], n: number) => average(arr.slice(-1 * n))
 
+/** ms seconds to starts from */
 export function timeSma(data: HegData[], ms: number) {
     const len = data.length;
     if (!len) return 0;
@@ -11,6 +12,7 @@ export function timeSma(data: HegData[], ms: number) {
     return ratioFromTime(data, fromTime);
 }
 
+/** From unix ms time */
 export function ratioFromTime(data: HegData[], fromTime: number) {
     const x: HegData[] = [];
 
@@ -20,18 +22,19 @@ export function ratioFromTime(data: HegData[], fromTime: number) {
         i--;
     }
 
-    return average(x.map(y => y.smoothRt)) || 0;
+    return average(x.map(y => y.sma3)) || 0;
 }
 
-export const genHegData = (newVal: HegTuple, time: number, ratios: number[]): HegData => ({
-    sma2s: 0,
-    sma10s: 0,
-    sma1m: 0,
-    sma5m: 0,
-    sma10m: 0,
-    time,
-    red: newVal[0],
-    ir: newVal[1],
-    ratio: newVal[2],
-    smoothRt: average([...ratios, newVal[2]].slice(-3)),
-});
+export function genHegData(newVal: HegTuple, time: number, data: HegData[]): HegData {
+    const val = {
+        time,
+        red: newVal[0],
+        ir: newVal[1],
+        ratio: newVal[2],
+    } as HegData;
+
+    const ratios3 = [...(data.slice(-2).map(x => x.ratio)), val.ratio];    
+    val.sma3 = sma(ratios3, 3);
+    
+    return val;
+};
