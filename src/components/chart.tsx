@@ -79,10 +79,10 @@ export class Chart extends React.Component<{}, S> {
         this.storeSub = store.subscribe(({ showGraph }) => this.setState({ showGraph }));
         this.hegSub = heg.subscribe(({ lastVal: x }) => {
             this.t2s.append(x.time, x.sma2s);
-            this.t10s.append(x.time, x.avg10s);
-            this.t1m.append(x.time, x.avg1m);
-            this.t5m.append(x.time, x.avg5m);
-            this.t10m.append(x.time, x.avg10m);
+            this.t10s.append(x.time, x.sma10s);
+            this.t1m.append(x.time, x.sma1m);
+            this.t5m.append(x.time, x.sma5m);
+            this.t10m.append(x.time, x.sma10m);
         });
     }
 

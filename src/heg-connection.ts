@@ -1,6 +1,6 @@
 import { StateManager } from "@giveback007/util-lib/dist/browser";
 import { HegData, HegState } from './heg-connection.type';
-import { HegValueChangeHandler } from './heg-value-change-handler';
+import { HegEventHandler } from './heg-event-handler';
 import { nth, numPadSpace } from './util/util';
 import { html, render,  } from 'lit-html';
 
@@ -28,7 +28,7 @@ export class HegConnection extends StateManager<HegState> {
     private server: BluetoothRemoteGATTServer | null = null;
     private cmdChar: BluetoothRemoteGATTCharacteristic | null = null;
     private characteristic: BluetoothRemoteGATTCharacteristic | null = null;
-    private hegValueChangeHandler: HegValueChangeHandler | null = null;
+    private hegValueChangeHandler: HegEventHandler | null = null;
     
     constructor() {
         super({
@@ -75,7 +75,7 @@ export class HegConnection extends StateManager<HegState> {
         
         this.characteristic = await service.getCharacteristic(txUUID);
 
-        this.hegValueChangeHandler = new HegValueChangeHandler(
+        this.hegValueChangeHandler = new HegEventHandler(
             this.characteristic, this.setState
         )
 

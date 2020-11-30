@@ -1,19 +1,19 @@
 import { min, sec } from '@giveback007/util-lib';
 import { StateManager } from '@giveback007/util-lib/dist/browser';
 import { HegData, HegState, HegTuple } from './heg-connection.type';
-import { genHegData, ratioFromTime, sma, timeSma } from './heg-connection.util';
+import { genHegData, sma, timeSma } from './heg-connection.util';
 
 const decoder = new TextDecoder("utf-8");
 
-export class HegValueChangeHandler {
+export class HegEventHandler {
 
     private rawRatio: number[] = [];
     private ratio: number[] = [];
     private data: HegData[] = [];
     
-    private secI = 0; // index fo
+    // private secI = 0; // index fo
     private secT = Math.floor(Date.now() / 1000) * 1000 + 1000;
-    private secRatio: number[] = [];
+    // private secRatio: number[] = [];
 
     private prevMidSPS: number = 0; // previous midSPS
     private midSPS: number = 0; // SPS after error filter
@@ -52,10 +52,7 @@ export class HegValueChangeHandler {
         const t = Date.now();
 
         if (t >= this.secT) {
-            this.secRatio[this.secI] = ratioFromTime(this.data, this.secT - 1000);
             this.secT = Math.floor(t / 1000) * 1000 + 1000;
-            this.secI++; // ensures that secI index only moves once per second
-
             this.handleSPS();
         }
 
@@ -88,14 +85,11 @@ export class HegValueChangeHandler {
         this.data[this.data.length] = val;
         this.ratio[this.ratio.length] = val.ratio;
 
-        this.secRatio[this.secI] = timeSma(this.data, sec(1));
-        if (!this.secRatio[this.secI]) return;
-
         val.sma2s = timeSma(this.data, sec(2));
-        val.avg10s = timeSma(this.data, sec(10));
-        val.avg1m = timeSma(this.data, min(1));
-        val.avg5m = timeSma(this.data, min(5));
-        val.avg10m = timeSma(this.data, min(10));
+        val.sma10s = timeSma(this.data, sec(10));
+        val.sma1m = timeSma(this.data, min(1));
+        val.sma5m = timeSma(this.data, min(5));
+        val.sma10m = timeSma(this.data, min(10));
 
         this.stateUpdater({ data: [...this.data], lastVal: val });
         this.SPS++;
