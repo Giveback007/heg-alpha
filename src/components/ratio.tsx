@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { min, msToTime, sec, unsubAll } from '@giveback007/util-lib';
 import { heg } from '../store';
-import type { HegData } from 'src/heg-connection/heg-connection.type';
+import type { HegData } from 'heg-alpha-ble';
 
 const nth = (n: number, to = 2) => (n || 0).toFixed(to);
 

@@ -9,6 +9,10 @@ module.exports = {
       '@snowpack/plugin-dotenv',
       '@snowpack/plugin-typescript',
       ['@snowpack/plugin-sass', { /* node-sass options */ }],
+      // ["@snowpack/plugin-webpack", {
+      //   outputPattern: {css: 'index.css', js: 'index.js', assets: '[name].[ext]'},
+      //   manifest: true
+      // }],
       ["@snowpack/plugin-optimize", {
         minifyJS: true,
         minifyCSS: true,
@@ -16,13 +20,15 @@ module.exports = {
         preloadModules: true,
         preloadCSS: true,
         target: 'es2015'
-      }]
+      }],
     ],
     install: [
       /* ... */
     ],
+    // https://www.snowpack.dev/#config.installoptions
     installOptions: {
-      treeshake: true
+      // Default:false, or true when run with snowpack build
+      // treeshake: true
       /* ... */
     },
     devOptions: {
@@ -31,7 +37,7 @@ module.exports = {
     buildOptions: {
       out: 'build',
       clean: true,
-      sourceMaps: true
+      sourceMaps: true,
       /* ... */
     },
     proxy: {

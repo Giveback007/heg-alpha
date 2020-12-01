@@ -1,7 +1,8 @@
 {
     "cSpell.words": [
-        "characteristicvaluechanged",
         "Unmount",
+        "characteristicvaluechanged",
+        "postbuild",
         "unsub"
     ]
 }
