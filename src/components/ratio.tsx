@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { min, msToTime, sec, unsubAll } from '@giveback007/util-lib';
 import { heg } from '../store';
-import { nth } from '../util/util';
-import { HegData } from '../heg-connection.type';
+import type { HegData } from 'src/heg-connection/heg-connection.type';
+
+const nth = (n: number, to = 2) => (n || 0).toFixed(to);
 
 export class Ratio extends React.Component {
     state = {

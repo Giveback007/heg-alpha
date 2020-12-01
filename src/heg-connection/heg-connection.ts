@@ -1,26 +1,14 @@
 import { StateManager } from "@giveback007/util-lib/dist/browser";
-import { HegData, HegState } from './heg-connection.type';
 import { HegEventHandler } from './heg-event-handler';
-import { nth, numPadSpace } from './util/util';
-import { html, render,  } from 'lit-html';
+import { render } from 'lit-html';
+import { btStatsCSS, btStatsModal } from './bt-stats-modal';
+import type { HegData, HegState } from "./heg-connection.type";
 
 const encoder = new TextEncoder();
 
 const serviceUUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
 const rxUUID      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
 const txUUID      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
-
-function btStatsModal(s: HegState, stateUpdater: StateManager<HegState>['setState']) {
-    const unf = s.ufSPS ? numPadSpace(s.ufSPS, 2) : '--';
-    const sps = s.SPS ? `${(s.SPS + '').padStart(2, ' ')} => ${nth(s.SPS/s.ufSPS * 100, 0)}%` : '--';
-    
-    return html`<div id="bt-stats" class=${s.showBtStats ? "" : "hide"}>
-        <div>Connected: <span id='device-connected'>${s.isConnected}</span></div>
-        <div>SPS: <span id='device-sps'>${unf}|${sps}</span></div>
-        <div>SPS Err: <span id='device-sps-errors'>${s.spsErrors} | ${nth(s.spsErrors/s.ufSPS * 100, 0)}%</span></div>
-        <button id="bt-stats-off" @click=${() => stateUpdater({ showBtStats: false })}>X</button>
-    </div>`;
-}
 
 export class HegConnection extends StateManager<HegState> {
 
@@ -45,7 +33,10 @@ export class HegConnection extends StateManager<HegState> {
         // { id: 'HegConnection', useKeys: ['showBtStats'] }
         );
 
-
+        const styleSheet: HTMLStyleElement = document.createElement("style");
+        styleSheet.innerText = btStatsCSS;
+        document.head.appendChild(styleSheet);
+        
         const btStatsRoot = document.createElement('div');
         document.body.appendChild(btStatsRoot);
 

@@ -1,6 +1,6 @@
 import { min, sec } from '@giveback007/util-lib';
-import { StateManager } from '@giveback007/util-lib/dist/browser';
-import { HegData, HegState, HegTuple } from './heg-connection.type';
+import type { StateManager } from '@giveback007/util-lib/dist/browser';
+import type { HegData, HegState, HegTuple } from './heg-connection.type';
 import { genHegData, sma, timeSma } from './heg-connection.util';
 
 const decoder = new TextDecoder("utf-8");
@@ -79,5 +79,7 @@ export class HegEventHandler {
 
         this.stateUpdater({ data: [...this.data], lastVal: val });
         this.SPS++;
+
+        return;
     }
 }

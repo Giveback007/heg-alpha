@@ -1,5 +1,5 @@
 import { average } from '@giveback007/util-lib';
-import { HegData, HegTuple } from './heg-connection.type';
+import type { HegData, HegTuple } from './heg-connection.type';
 
 export const sma = (arr: number[], n: number) => average(arr.slice(-1 * n))
 

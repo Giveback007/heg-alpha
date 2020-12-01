@@ -1,5 +1,5 @@
 import { arrLast } from '@giveback007/util-lib';
-import { HegTuple } from "./heg-connection.type";
+import type { HegTuple } from './heg-connection.type';
 
 const decoder = new TextDecoder("utf-8");
 

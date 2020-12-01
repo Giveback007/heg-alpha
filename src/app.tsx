@@ -1,12 +1,14 @@
-import * as React from 'react';
-import YouTube from 'react-youtube';
+import React from 'react';
+
+// import YouTube from 'react-youtube';
+
 import { AppletsMenu } from './components/applets/applets';
 import { Chart } from './components/chart';
 import { MenuApp } from './components/menu/menu';
 import { Ratio } from './components/ratio';
 
 
-export class App extends React.Component {
+class App extends React.Component {
     render() {
         return <>
             <MenuApp />
@@ -22,3 +24,5 @@ export class App extends React.Component {
     //     event.target.pauseVideo();
     // }
 }
+
+export default App

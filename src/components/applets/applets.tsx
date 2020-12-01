@@ -1,13 +1,12 @@
 import './applets.sass'
-import React = require('react');
-import { Component } from 'react'
+import React, { Component } from 'react';
 import { Card, CardActionArea, CardHeader, CardMedia, Grid } from '../material-ui';
 import { store } from '../../store';
 
-const circleJPG = require('./circle.jpg');
-const earthJPG  = require('./earth.jpg');
-const textJPG   = require('./text.jpg');
-const videoJPG  = require('./video.jpg');
+import circleJPG from './circle.jpg';
+import earthJPG from './earth.jpg';
+import textJPG from './text.jpg';
+import videoJPG from './video.jpg';
 
 type appletMetadata = {
     element: Component | JSX.Element;

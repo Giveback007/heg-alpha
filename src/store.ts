@@ -1,5 +1,5 @@
 import { StateManager } from "@giveback007/util-lib/dist/browser/state-manager";
-import { HegConnection } from './heg-connection';
+import { HegConnection } from "./heg-connection/heg-connection";
 
 export type State = {
     showGraph: boolean;

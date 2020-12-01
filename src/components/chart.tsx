@@ -1,5 +1,5 @@
+import React from 'react';
 import { unsubAll } from '@giveback007/util-lib';
-import React = require('react');
 import { SmoothieChart, TimeSeries } from "smoothie";
 import { store, heg } from '../store';
 

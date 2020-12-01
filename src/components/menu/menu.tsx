@@ -1,15 +1,15 @@
-import './menu.sass'
-import React = require('react');
+import React from 'react';
 import { heg, store } from '../../store';
 import { AppBar, Divider, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, Toolbar } from '../material-ui';
 import { AppsIcon, BluetoothIcon, ChevronLeftIcon, InboxIcon, MailIcon, MenuIcon, RefreshIcon, ShowChartIcon } from '../icons';
+// import './menu.sass'
 
-const menuItems = [
-    {
-        name: 'Toggle Graph',
-        function: () => store.setState({ showGraph: !store.getState().showGraph })
-    }
-];
+// const menuItems = [
+//     {
+//         name: 'Toggle Graph',
+//         function: () => store.setState({ showGraph: !store.getState().showGraph })
+//     }
+// ];
 
 type S = {
     showMenu: boolean;
