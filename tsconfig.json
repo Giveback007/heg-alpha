@@ -10,6 +10,7 @@
         "paths": {},
         /* noEmit - Snowpack builds (emits) files, not tsc. */
         "noEmit": true,
+        
         /* Additional Options */
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
@@ -17,6 +18,7 @@
         "allowSyntheticDefaultImports": true,
         "importsNotUsedAsValues": "error",
         "pretty": true,
+        "sourceMap": false,
 
         /* -- Strict Type-Checking Options -- */
         "alwaysStrict": true,                       /* Parse in strict mode and emit "use strict" for each source file. */

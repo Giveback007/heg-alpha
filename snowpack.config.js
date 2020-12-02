@@ -25,13 +25,13 @@ module.exports = {
     install: [
       /* ... */
     ],
-    // https://www.snowpack.dev/#config.installoptions
+    // https://www.snowpack.dev/reference/configuration#config.installoptions
     installOptions: {
-      // Default:false, or true when run with snowpack build
-      // treeshake: true
       /* ... */
     },
+    // https://www.snowpack.dev/reference/configuration#config.devoptions
     devOptions: {
+      open: 'none'
       /* ... */
     },
     buildOptions: {

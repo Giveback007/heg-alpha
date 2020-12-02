@@ -1,14 +1,12 @@
 import React from 'react';
 import { unsubAll } from '@giveback007/util-lib';
 import { SmoothieChart, TimeSeries } from "smoothie";
-import { store, heg } from '../store';
+import { heg, linker, State } from '../store';
 
-type S = { showGraph: boolean; }
+type S = { };
+type P = { } & ReturnType<typeof link>;
 
-export class Chart extends React.Component<{}, S> {
-    state = { showGraph: false, }
-
-    storeSub: any;
+class _Chart extends React.Component<P, S> {
     hegSub: any;
 
     componentWillUnmount() {
@@ -76,7 +74,6 @@ export class Chart extends React.Component<{}, S> {
 
         addEventListener('resize', () => this.updateCanvasSize());
 
-        this.storeSub = store.subscribe(({ showGraph }) => this.setState({ showGraph }));
         this.hegSub = heg.subscribe(({ lastVal: x }) => {
             this.t2s.append(x.time, x.sma2s);
             this.t10s.append(x.time, x.sma10s);
@@ -86,13 +83,16 @@ export class Chart extends React.Component<{}, S> {
         });
     }
 
-    render = (s = this.state) => <canvas
+    render = (p = this.props) => <canvas
         ref={this.canvasRef}
         style={{
             display: 'block',
             position: 'fixed',
             bottom: 0,
-            visibility: s.showGraph ? "initial" : "hidden"
+            visibility: p.showGraph ? "initial" : "hidden"
         }}
     />;
 }
+
+const link = (s: State) => ({ showGraph: s.showGraph });
+export const Chart = linker(link, _Chart);

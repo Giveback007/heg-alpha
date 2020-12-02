@@ -1,7 +1,7 @@
 import './applets.sass'
 import React, { Component } from 'react';
 import { Card, CardActionArea, CardHeader, CardMedia, Grid } from '../material-ui';
-import { store } from '../../store';
+import { linker, State, store } from '../../store';
 
 import circleJPG from './circle.jpg';
 import earthJPG from './earth.jpg';
@@ -32,30 +32,14 @@ const applets: appletMetadata[] = [{
     icon: videoJPG,
 }];
 
-type S = {
-    showApplets: boolean,
-    applets: appletMetadata[]
-}
+type S = { };
+type P = { } & ReturnType<typeof link>;
 
-export class AppletsMenu extends React.Component<{}, S> {
-    state = {
-        showApplets: false,
-        applets
-    }
+class _AppletsMenu extends React.Component<P, S> {
+    
+    render(p = this.props) {
 
-    sub: any;
-
-    componentDidMount() {
-        this.sub = store.subscribe(({ showApplets }) => this.setState({ showApplets }))
-    }
-
-    componentWillUnmount() {
-        this.sub.unsubscribe();
-    }
-
-    render(s = this.state) {
-
-        const applets = s.applets.map(({ icon, name }, i) =>
+        const appletsElms = applets.map(({ icon, name }, i) =>
             <Grid item key={i}><Card>
                 <CardActionArea>
                     <CardMedia image={icon}/>
@@ -64,7 +48,7 @@ export class AppletsMenu extends React.Component<{}, S> {
             </Card></Grid>
         );
 
-        return (s.showApplets ? <>
+        return (p.showApplets ? <>
             <div
                 id="applets-background"
                 onClick={() => store.setState({ showApplets: false })}
@@ -73,8 +57,11 @@ export class AppletsMenu extends React.Component<{}, S> {
                 <Grid
                     container
                     justify="center"
-                >{applets}</Grid>
+                >{appletsElms}</Grid>
             </div>
         </> : null)
     }
 }
+
+const link = (s: State) => ({ showApplets: s.showApplets });
+export const AppletsMenu = linker(link, _AppletsMenu);

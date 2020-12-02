@@ -4,7 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import './index.css';
+import './index.sass';
 
 if (env.MODE === 'development') {
     // -- Run in DEV only -- //

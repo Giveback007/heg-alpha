@@ -1,0 +1,1 @@
+* Minifying images and stuff: https://www.youtube.com/watch?v=ipNW6lJHVEs
